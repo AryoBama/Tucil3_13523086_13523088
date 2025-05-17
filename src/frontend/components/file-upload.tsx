@@ -2,18 +2,17 @@
 
 import type React from "react"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Upload } from "lucide-react"
 
 interface FileUploadProps {
-  onFileLoaded: (content: string) => void
+  onFileLoaded: (content: string) => void;
+  text: string;
+  setText: (text: string) => void;
 }
 
-export function FileUpload({ onFileLoaded }: FileUploadProps) {
-  const [text, setText] = useState<string>("")
-
+export function FileUpload({ onFileLoaded, text, setText }: FileUploadProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -49,7 +48,7 @@ LLJMM.`
     setText(exampleInput)
     onFileLoaded(exampleInput)
   }
-
+  
   return (
     <div className="space-y-2">
       <div className="flex gap-2">

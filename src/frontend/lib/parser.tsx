@@ -158,7 +158,7 @@ export async function sendParsedData(input: string) {
   try {
     const parsedData = await parseInputFile(input);
 
-    const url = 'https://your-server-endpoint.com/api/data';
+    const url = '://your-server-endpoint.com/api/dhttpsata';
 
     const response = await fetch(url, {
       method: 'POST',
@@ -166,8 +166,8 @@ export async function sendParsedData(input: string) {
         'width': parsedData.dimensions[0] ,
         'height': parsedData.dimensions[1],
         'grid': parsedData.pieces,
-        'exitRow': parsedData.exitPosition[0],
-        'exitCol': parsedData.exitPosition[1]
+        'exitRow': parsedData.exist[0],
+        'exitCol': parsedData.exits[1]
       },
       body: JSON.stringify(parsedData),
     });

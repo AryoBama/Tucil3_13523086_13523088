@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -46,22 +46,20 @@ type PieceType = {
 }
 
 type BoardState = {
-  dimensions: [number, number] // Inner dimensions (without border)
-  board: string[][] // Full board including border
+  dimensions: [number, number] 
+  board: string[][] 
   pieces: PieceType[]
   primaryPiece: PieceType | null
   exit: [number, number] | null
-  selectedCells: [number, number][] // For tracking clicked cells
+  selectedCells: [number, number][]
 }
 
 type EditorMode = "place" | "erase" | "primary" | "exit"
 
 export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText: string) => void }) {
-  // Inner dimensions (without border)
   const [innerRows, setInnerRows] = useState(6)
   const [innerCols, setInnerCols] = useState(6)
 
-  // Full dimensions (with border)
   const { fullRows, fullCols } = useMemo(
     () => ({
       fullRows: innerRows + 2,
@@ -86,8 +84,12 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
   const [dragEnd, setDragEnd] = useState<[number, number] | null>(null)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [validationSuccess, setValidationSuccess] = useState<boolean>(false)
+  const [pieceLength, setPieceLength] = useState(2)
+  const [orientation, setOrientation] = useState<'horizontal' | 'vertical'>('horizontal')
+  const [hoverCell, setHoverCell] = useState<[number, number] | null>(null)
+  const [isClient, setIsClient] = useState(false)
+  const [puzzleText, setPuzzleText] = useState<string | null>(null)
 
-  // Determine exit position and direction
   const exitInfo = useMemo(() => {
     if (!boardState.exit) return null
 
@@ -131,51 +133,13 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     setValidationSuccess(false)
   }, [innerRows, innerCols])
 
-  // Handle cell click
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // --- Replace handleCellClick to only allow erase/primary/exit ---
   const handleCellClick = (row: number, col: number) => {
-    if (mode === "place") {
-      // If it's a border cell, don't allow placing pieces
-      if (isBorderCell(row, col)) {
-        alert("Cannot place pieces in the border area. Border is reserved for exits only.")
-        return
-      }
-
-      // If this is the first cell selected
-      if (boardState.selectedCells.length === 0) {
-        setBoardState((prevState) => ({
-          ...prevState,
-          selectedCells: [[row, col]],
-        }))
-        return
-      }
-
-      // If this is the second cell selected
-      if (boardState.selectedCells.length === 1) {
-        const [firstRow, firstCol] = boardState.selectedCells[0]
-
-        // Check if the cells form a straight line
-        const isHorizontal = row === firstRow
-        const isVertical = col === firstCol
-
-        if (!isHorizontal && !isVertical) {
-          alert("Pieces must be either horizontal or vertical")
-          setBoardState((prevState) => ({
-            ...prevState,
-            selectedCells: [],
-          }))
-          return
-        }
-
-        // Place the piece
-        placePiece(firstRow, firstCol, row, col, currentPiece)
-
-        // Clear selected cells
-        setBoardState((prevState) => ({
-          ...prevState,
-          selectedCells: [],
-        }))
-      }
-    } else if (mode === "erase") {
+    if (mode === "erase") {
       eraseCells(row, col)
     } else if (mode === "primary") {
       placePrimaryPiece(row, col)
@@ -189,27 +153,39 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     }
   }
 
-  // Handle cell drag
-  const handleCellDrag = (startRow: number, startCol: number, endRow: number, endCol: number) => {
+  // --- Update handleCellDrag for 1xn block placement ---
+  const handleCellDrag = (startRow: number, startCol: number) => {
     if (mode !== "place") return
 
-    // If either start or end is in the border, don't allow
-    if (isBorderCell(startRow, startCol) || isBorderCell(endRow, endCol)) {
-      alert("Cannot place pieces in the border area. Border is reserved for exits only.")
-      return
+    let endRow = startRow
+    let endCol = startCol
+
+    if (orientation === "horizontal") {
+      endCol = startCol + pieceLength - 1
+      if (endCol >= fullCols - 1) {
+        alert("Piece out of bounds")
+        return
+      }
+    } else {
+      endRow = startRow + pieceLength - 1
+      if (endRow >= fullRows - 1) {
+        alert("Piece out of bounds")
+        return
+      }
     }
 
-    // Check if the cells form a straight line
-    const isHorizontal = startRow === endRow
-    const isVertical = startCol === endCol
-
-    if (!isHorizontal && !isVertical) {
-      alert("Pieces must be either horizontal or vertical")
-      return
+    // Check border
+    for (let r = startRow; r <= endRow; r++) {
+      for (let c = startCol; c <= endCol; c++) {
+        if (isBorderCell(r, c)) {
+          alert("Cannot place pieces in the border area. Border is reserved for exits only.")
+          return
+        }
+      }
     }
-
-    // Place the piece
+    
     placePiece(startRow, startCol, endRow, endCol, currentPiece)
+    setCurrentPiece(getNextAvailablePiece())
   }
 
   // Place a piece on the board
@@ -226,6 +202,13 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
 
     if (!isHorizontal && !isVertical) {
       alert("Pieces must be either horizontal or vertical")
+      return
+    }
+
+    // Prevent duplicate piece IDs
+    const existingPiece = boardState.pieces.find((p) => p.id === pieceId)
+    if (existingPiece) {
+      alert(`Piece "${pieceId}" already exists. Please erase it first before placing a new one.`)
       return
     }
 
@@ -250,18 +233,12 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       }
     }
 
-    // Update or create piece
-    const existingPieceIndex = boardState.pieces.findIndex((p) => p.id === pieceId)
-    const newPiece = { id: pieceId, cells, isHorizontal }
-
-    let newPieces
-    if (existingPieceIndex >= 0) {
-      newPieces = [...boardState.pieces]
-      newPieces[existingPieceIndex] = newPiece
-    } else {
-      newPieces = [...boardState.pieces, newPiece]
-    }
-
+    // Add the new piece
+    const newPieces = [
+      ...boardState.pieces,
+      { id: pieceId, cells, isHorizontal }
+    ]
+    
     setBoardState((prevState) => ({
       ...prevState,
       board: newBoard,
@@ -272,6 +249,29 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     setValidationErrors([])
     setValidationSuccess(false)
   }
+
+  // --- SHADOW LOGIC ---
+  const getShadowCells = () => {
+    if (!hoverCell || mode !== "place") return []
+    const [startRow, startCol] = hoverCell
+    let endRow = startRow
+    let endCol = startCol
+    if (orientation === "horizontal") {
+      endCol = startCol + pieceLength - 1
+      if (endCol >= fullCols - 1) return []
+    } else {
+      endRow = startRow + pieceLength - 1
+      if (endRow >= fullRows - 1) return []
+    }
+    const cells: [number, number][] = []
+    for (let r = startRow; r <= endRow; r++) {
+      for (let c = startCol; c <= endCol; c++) {
+        cells.push([r, c])
+      }
+    }
+    return cells
+  }
+  const shadowCells = getShadowCells()
 
   // Erase cells
   const eraseCells = (row: number, col: number) => {
@@ -484,35 +484,67 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     return errors.length === 0
   }
 
-  // Generate puzzle text
   const generatePuzzleText = () => {
-    if (!validatePuzzle()) return null
+    let left = false;
+    let right = false;
+    let top = false;
+    let bottom = false;
 
-    // We need to generate the inner board without the border
+    if(boardState.exit){
+        const [exitRow, exitCol] = boardState.exit
+        if(exitRow == 0){
+            top = true
+        } else if(exitRow == fullRows - 1){
+            bottom = true
+        } else if(exitCol == 0){
+            left = true;
+        } else{
+            right = true;
+        }
+    }
+
     const innerBoard = []
+    if(top){
+        const row = []
+        for (let c = 1; c < fullCols - 1; c++) {
+            row.push(" ")
+        }
+        innerBoard.push(row.join(""))
+    }
+    
     for (let r = 1; r < fullRows - 1; r++) {
       const row = []
+      if(left){
+            row.push(" ")
+        }
       for (let c = 1; c < fullCols - 1; c++) {
         row.push(boardState.board[r][c])
       }
+      if(right){
+            row.push(" ")
+        }
       innerBoard.push(row.join(""))
     }
 
-    // Add the exit to the inner board representation
+    if(bottom){
+        const row = []
+        for (let c = 1; c < fullCols - 1; c++) {
+            row.push(" ")
+        }
+        innerBoard.push(row.join(""))
+    }
+
     if (boardState.exit) {
       const [exitRow, exitCol] = boardState.exit
 
-      // Map the exit position to the inner board coordinates
       let innerExitRow = exitRow - 1
       let innerExitCol = exitCol - 1
 
-      // If the exit is on the top or left border, it's outside the inner board
-      // If it's on the bottom or right border, it's at the edge of the inner board
       if (exitRow === 0) innerExitRow = 0
-      else if (exitRow === fullRows - 1) innerExitRow = innerRows - 1
+      else if (exitRow === fullRows - 1) innerExitRow = innerRows
 
       if (exitCol === 0) innerExitCol = 0
-      else if (exitCol === fullCols - 1) innerExitCol = innerCols - 1
+      else if (exitCol === fullCols - 1) innerExitCol = innerCols
 
       // Replace the character at the exit position with 'K'
       const rowChars = innerBoard[innerExitRow].split("")
@@ -521,14 +553,15 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     }
 
     const pieceCount = boardState.pieces.length
-    return `${innerRows} ${innerCols} ${pieceCount}\n${innerBoard.join("\n")}`
+    return `${innerRows} ${innerCols}\n${pieceCount}\n${innerBoard.join("\n")}`
   }
 
   // Handle create puzzle button
   const handleCreatePuzzle = () => {
-    const puzzleText = generatePuzzleText()
-    if (puzzleText) {
-      onPuzzleCreated(puzzleText)
+    if (validatePuzzle()) {
+      const text = generatePuzzleText()
+      setPuzzleText(text)
+      onPuzzleCreated(text)
     }
   }
 
@@ -559,7 +592,7 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       }
     }
 
-    return "A" // Fallback
+    return "A"
   }
 
   return (
@@ -635,7 +668,27 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
                   {currentPiece}
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground">Click two cells to place a piece, or click and drag.</p>
+              {/* --- New controls for length and orientation --- */}
+              <div className="flex items-center space-x-2 mt-2">
+                <Label>Length</Label>
+                <input
+                  type="number"
+                  min={2}
+                  max={orientation === "horizontal" ? innerCols : innerRows}
+                  value={pieceLength}
+                  onChange={e => setPieceLength(Math.max(2, Math.min(Number(e.target.value), orientation === "horizontal" ? innerCols : innerRows)))}
+                  className="w-16 border rounded px-2 py-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOrientation(o => (o === 'horizontal' ? 'vertical' : 'horizontal'))}
+                >
+                  Rotate ({orientation})
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground">Drag from a cell to place a 1×n piece. Use Rotate and Length controls.</p>
             </div>
           )}
 
@@ -686,38 +739,38 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
                   const isBorder = isBorderCell(rowIndex, colIndex)
                   const isExit = isExitCell(rowIndex, colIndex)
                   const isSelected = boardState.selectedCells.some(([r, c]) => r === rowIndex && c === colIndex)
+                  const isShadow = shadowCells.some(([r, c]) => r === rowIndex && c === colIndex)
 
                   return (
                     <div
                       key={`${rowIndex}-${colIndex}`}
                       className={cn(
                         "w-10 h-10 flex items-center justify-center font-bold border transition-colors",
-                        // Border cells have different styling
                         isBorder && !isExit ? "bg-gray-200 border-gray-300" : "border-gray-200 cursor-pointer",
-                        // Cell content styling
                         cell === "."
                           ? isBorder && !isExit
                             ? "bg-gray-200"
                             : "bg-gray-100"
                           : PIECE_COLORS[cell as keyof typeof PIECE_COLORS],
-                        // Selected cell styling
                         isSelected && "ring-2 ring-blue-500",
-                        // Exit cell styling
                         isExit && "bg-green-500 text-white relative z-10",
+                        isShadow && cell === "." && "bg-blue-200 opacity-50"
                       )}
                       onMouseDown={() => {
+                        if (mode === "place") {
+                          handleCellDrag(rowIndex, colIndex)
+                        }
                         setDragStart([rowIndex, colIndex])
                         setDragEnd(null)
                       }}
                       onMouseUp={() => {
-                        if (dragStart) {
-                          setDragEnd([rowIndex, colIndex])
-                          handleCellDrag(dragStart[0], dragStart[1], rowIndex, colIndex)
-                          setDragStart(null)
-                          setDragEnd(null)
-                        }
+                        setDragStart(null)
+                        setCurrentPiece(getNextAvailablePiece())
+                        setDragEnd(null)
                       }}
                       onClick={() => handleCellClick(rowIndex, colIndex)}
+                      onMouseEnter={() => setHoverCell([rowIndex, colIndex])}
+                      onMouseLeave={() => setHoverCell(null)}
                     >
                       {cell !== "." ? cell : ""}
 
@@ -765,10 +818,10 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
         </div>
       </div>
 
-      {validationSuccess && (
+      {validationSuccess && isClient && puzzleText && (
         <div className="border rounded-md p-4 bg-gray-50">
           <h3 className="text-lg font-medium mb-2">Generated Puzzle Text:</h3>
-          <pre className="bg-white p-3 rounded border overflow-x-auto text-sm">{generatePuzzleText()}</pre>
+          <pre className="bg-white p-3 rounded border overflow-x-auto text-sm">{puzzleText}</pre>
         </div>
       )}
     </div>

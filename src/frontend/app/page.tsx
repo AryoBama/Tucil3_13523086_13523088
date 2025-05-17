@@ -44,7 +44,6 @@ export default function Home() {
     setInputText(puzzleText)
     try {
       const parsedPuzzle = parseInputFile(puzzleText)
-      sendParsedData(puzzleText)
       setPuzzle(parsedPuzzle)
       setSolution(null)
       setCurrentStep(0)
@@ -56,7 +55,8 @@ export default function Home() {
     }
   }
 
-  const solvePuzzle = () => {
+  const solvePuzzle = (puzzleText: string) => {
+    sendParsedData(puzzleText)
     if (!puzzle) return
 
     setIsLoading(true)
@@ -157,7 +157,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <FileUpload onFileLoaded={handleFileUpload} />
+                  <FileUpload onFileLoaded={handleFileUpload} text={inputText} setText={setInputText} />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <AlgorithmSelector value={algorithm} onChange={setAlgorithm} />
@@ -165,7 +165,7 @@ export default function Home() {
                     <HeuristicSelector value={heuristic} onChange={setHeuristic} disabled={algorithm !== "astar"} />
                   </div>
 
-                  <Button onClick={solvePuzzle} disabled={!puzzle || isLoading} className="w-full">
+                  <Button onClick={() => solvePuzzle(inputText)} disabled={!puzzle || isLoading} className="w-full">
                     {isLoading ? "Solving..." : "Solve Puzzle"}
                   </Button>
                 </div>
