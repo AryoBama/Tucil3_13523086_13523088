@@ -137,6 +137,13 @@ export function parseInputFile(input: string): any {
     console.warn(`Warning: Expected ${N} pieces (excluding primary piece), found ${pieces.size - 1}`)
   }
 
+  if(exitOnVertical) {
+        A--;
+    }
+    else{
+        B--;
+    }
+
   return {
     dimensions: [A, B],
     numPieces: N,
@@ -151,8 +158,24 @@ export function parseInputFile(input: string): any {
       positions,
       isHorizontal: positions.length > 1 && positions[0][0] === positions[1][0],
     })),
+    grid: createGridFromPieces(pieces, A, B)
   }
 }
+
+function createGridFromPieces(pieces: any, rows: number, cols: number):any {
+  const grid = Array.from({ length: rows }, () => Array(cols).fill('.'));
+
+  for (const piece of pieces) {
+    if (!piece.symbol) continue;
+
+    for (const [row, col] of piece.positions) {
+      grid[row][col] = piece.symbol;
+    }
+  }
+
+  return grid;
+}
+
 
 export async function sendParsedData(input: string) {
   try {
@@ -165,9 +188,9 @@ export async function sendParsedData(input: string) {
       headers: {
         'width': parsedData.dimensions[0] ,
         'height': parsedData.dimensions[1],
-        'grid': parsedData.pieces,
-        'exitRow': parsedData.exist[0],
-        'exitCol': parsedData.exits[1]
+        'grid': parsedData.grid,
+        'exitRow': parsedData.exit[0],
+        'exitCol': parsedData.exit[1]
       },
       body: JSON.stringify(parsedData),
     });

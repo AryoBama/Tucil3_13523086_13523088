@@ -38,7 +38,7 @@ export function FileUpload({ onFileLoaded, text, setText }: FileUploadProps) {
   const loadExample = () => {
     const exampleInput = 
     `6 6 
-12
+11
 AAB..F
 ..BCDF
 GPPCDFK
