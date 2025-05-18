@@ -70,6 +70,7 @@ export function parseInputFile(input: string): any {
   // Convert board to 2D array
   const initialBoard = boardLines.map((line) => line.split(""))
 
+
   // Find primary piece and exit
   let primaryPieceFound = false
   let exitFound = false
@@ -142,22 +143,38 @@ export function parseInputFile(input: string): any {
     }
   }
   console.log(pieces)
-  // Validate number of pieces
+ 
   if (pieces.size - 1 !== N) {
-    // -1 for primary piece
     console.warn(`Warning: Expected ${N} pieces (excluding primary piece), found ${pieces.size - 1}`)
   }
 
   
   let originA = row;
   let originB = col;
-  console.log(row, col, exitPosition)
+  
   if(exitOnVertical){
     row--;
   } else{
     col--
   }
-  console.log(row, col, exitPosition)
+  
+  let maxColLen = initialBoard[0].length
+  for (let i = 0; i < row; i++) {
+    if(initialBoard[i].length > maxColLen){
+      maxColLen = initialBoard[i].length
+    }
+  }
+  console.log(maxColLen)
+  for (let i = 0; i < row; i++) {
+    for (let j = 0; j < col; j++) {
+      if (initialBoard[i][j] === " ") {
+          initialBoard[i][j] = "."
+      }
+    }
+    while(initialBoard[i].length < maxColLen){
+      initialBoard[i].push(".")
+    }
+  }
   
   return {
     dimensions: [originA, originB],
@@ -223,8 +240,8 @@ export async function sendParsedData(input: string) {
       
 
     console.log(parsedData.grid)
-    console.log(sendedExitRow)
-    console.log(sendedExitRow)
+    console.log(parsedData.initialBoard)
+    console.log(sendedExitCol)
     const url = 'http://localhost:8080/api/solve/UCS';
 
     const response = await fetch(url, {
@@ -281,8 +298,6 @@ function padBoardWithExit(
   exitCol: number
 ) {
   let padded: string[][];
-
-  // Exit on top
   if (exitRow === 0) {
     padded = [
       Array.from({ length: cols }, (_, c) => (c === exitCol ? "K" : ".")),
@@ -291,7 +306,6 @@ function padBoardWithExit(
       ),
     ];
   }
-  // Exit on bottom
   else if (exitRow === rows - 1) {
     padded = [
       ...Array.from({ length: rows - 1 }, (_, r) =>
@@ -300,21 +314,18 @@ function padBoardWithExit(
       Array.from({ length: cols }, (_, c) => (c === exitCol ? "K" : ".")),
     ];
   }
-  // Exit on left
   else if (exitCol === 0) {
     padded = Array.from({ length: rows }, (_, r) => [
       r === exitRow ? "K" : ".",
       ...Array.from({ length: cols - 1 }, (_, c) => board[r]?.[c] ?? "."),
     ]);
   }
-  // Exit on right
   else if (exitCol === cols - 1) {
     padded = Array.from({ length: rows }, (_, r) => [
       ...Array.from({ length: cols - 1 }, (_, c) => board[r]?.[c] ?? "."),
       r === exitRow ? "K" : ".",
     ]);
   }
-  // Fallback: no padding, just fill as usual
   else {
     padded = Array.from({ length: rows }, (_, r) =>
       Array.from({ length: cols }, (_, c) => board[r]?.[c] ?? ".")

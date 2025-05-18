@@ -13,18 +13,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen bg-background">
-          <header className="border-b bg-secondary">
-            <div className="container mx-auto py-4">
-              <h1 className="text-2xl font-bold text-foreground">Sliding Block Puzzle Solver</h1>
-            </div>
-          </header>
+        <div
+          className="min-h-screen"
+          style={{ background: "radial-gradient(circle,rgba(156, 192, 240, 1) 0%, rgba(255, 255, 255, 1) 100%)" }}
+        >
+          <header className="border-b bg-secondary"></header>
           <main className="container mx-auto py-6">{children}</main>
-          <footer className="border-t mt-12 bg-secondary">
-            <div className="container mx-auto py-4 text-center text-sm text-muted-foreground">
-              <p>Sliding Block Puzzle Solver &copy; {new Date().getFullYear()}</p>
-            </div>
-          </footer>
+          <footer className="border-t mt-12 bg-secondary"></footer>
         </div>
       </body>
     </html>

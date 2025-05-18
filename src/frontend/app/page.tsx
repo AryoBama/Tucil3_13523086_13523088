@@ -63,24 +63,22 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      // Send to backend and get the response
       const backendResult = await sendParsedData(puzzleText);
+      console.log(backendResult)
 
-      if (!backendResult) {
-        alert("No solution found or backend error!");
+      setStats({
+        nodesVisited: backendResult.cntNode ?? 0,
+        executionTime: backendResult.time ?? 0,
+      });
+      if (!backendResult || backendResult.steps.length == 0) {
+        alert("No solution found!");
         setIsLoading(false);
         return;
       }
 
-      // If your backend returns { puzzle, solution }, use them directly.
-      // If it returns just solution, adjust accordingly.
-      setPuzzle(backendResult.puzzle || puzzle); // fallback to current puzzle if not sent back
+      setPuzzle(backendResult.puzzle || puzzle);
       setSolution(backendResult.solution || backendResult);
 
-      // Optionally, set stats if your backend returns them
-      if (backendResult.stats) {
-        setStats(backendResult.stats);
-      }
     } catch (error) {
       console.error("Error solving puzzle:", error);
       alert("Error solving puzzle: " + (error as Error).message);
@@ -96,28 +94,23 @@ export default function Home() {
   }
 
   const handleAnimate = () => {
-    // Prevent multiple animations from running at the same time
     if (isAnimating) return;
 
     setIsAnimating(true);
 
-    // Set a delay (for animation effect)
-    let stepDelay = 200; // 300ms delay per step
+    let stepDelay = 300; 
 
-    // Increment the step gradually with setTimeout
     let stepIndex = currentStep;
 
     const stepInterval = setInterval(() => {
-      stepIndex = (stepIndex + 1) % solution.steps.length;
+      stepIndex = (stepIndex + 1) % (solution.steps.length + 1);
       setCurrentStep(stepIndex);
 
-      // Stop the interval when we have completed the animation cycle
-      if (stepIndex === solution.steps.length - 1) {
-        setCurrentStep(solution.steps.length);
+      if (stepIndex === solution.steps.length) {
         clearInterval(stepInterval);
-        setIsAnimating(false); // Re-enable the animation button
+        setIsAnimating(false); 
       }
-    }, stepDelay); // Adjust stepDelay for desired speed
+    }, stepDelay);
 };
 
   const handlePrev = () => {
@@ -132,7 +125,7 @@ export default function Home() {
 
   return (
     <main className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center my-6">Sliding Block Puzzle Solver</h1>
+      <h1 className="text-3xl font-bold text-center my-6">Rush Hour Solver</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">
@@ -143,7 +136,7 @@ export default function Home() {
         <TabsContent value="editor" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Visual Puzzle Editor</CardTitle>
+              <CardTitle>Rush Hour Solver</CardTitle>
             </CardHeader>
             <CardContent>
               <PuzzleEditor onPuzzleCreated={handlePuzzleCreated} />
