@@ -1,4 +1,5 @@
-package backend.models;
+package com.project.backend.models;
+
 
 public class Car{
 

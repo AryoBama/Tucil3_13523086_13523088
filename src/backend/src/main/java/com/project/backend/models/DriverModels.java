@@ -1,4 +1,5 @@
-package backend.models;
+package com.project.backend.models;
+
 
 public class DriverModels {
     public static void main(String[] args) {
@@ -116,60 +117,60 @@ public class DriverModels {
         // clone2.displayBoard();
 
                 // Buat papan 6x6 dengan exit di (2,5)
-        Board board = new Board(6, 6, 2, 5);
+    //     Board board = new Board(6, 6, 2, 5);
 
-        // Tambahkan mobil-mobil
-        Car redCar = new Car('P', 2, "horizontal"); // mobil tujuan
-        Car carA = new Car('A', 3, "vertical");
-        Car carB = new Car('B', 2, "horizontal");
+    //     // Tambahkan mobil-mobil
+    //     Car redCar = new Car('P', 2, "horizontal"); // mobil tujuan
+    //     Car carA = new Car('A', 3, "vertical");
+    //     Car carB = new Car('B', 2, "horizontal");
 
-        // Tempatkan mobil di papan
-        board.addCar(redCar, 2, 0);
-        board.addCar(carA, 3, 0);
-        board.addCar(carB, 0, 3);
+    //     // Tempatkan mobil di papan
+    //     board.addCar(redCar, 2, 0);
+    //     board.addCar(carA, 3, 0);
+    //     board.addCar(carB, 0, 3);
 
-        // Tampilkan papan awal
-        System.out.println("=== Papan Awal ===");
-        board.displayBoard();
+    //     // Tampilkan papan awal
+    //     System.out.println("=== Papan Awal ===");
+    //     board.displayBoard();
 
-        // Buat node root (awal)
-        BoardState rootState = new BoardState(board, 0, 'P');
-        BoardNode rootNode = new BoardNode(rootState, 0, 0, null);
+    //     // Buat node root (awal)
+    //     BoardState rootState = new BoardState(board, 0, 'P');
+    //     BoardNode rootNode = new BoardNode(rootState, 0, 0, null);
 
-        // Buat node anak pertama: gerakkan mobil B ke kanan sejauh 1
-        Board board1 = new Board(board); // duplikat papan
-        board1.move('P',1);
-        if (board1.move('B', 1)) {
-            BoardState state1 = new BoardState(board1, 1, 'B');
-            BoardNode node1 = new BoardNode(state1, 0, 1, rootNode);
-            System.out.println("=== Node Anak 1: B ke kanan ===");
-            node1.getState().displayState();
-        }
+    //     // Buat node anak pertama: gerakkan mobil B ke kanan sejauh 1
+    //     Board board1 = new Board(board); // duplikat papan
+    //     board1.move('P',1);
+    //     if (board1.move('B', 1)) {
+    //         BoardState state1 = new BoardState(board1, 1, 'B');
+    //         BoardNode node1 = new BoardNode(state1, 0, 1, rootNode);
+    //         System.out.println("=== Node Anak 1: B ke kanan ===");
+    //         node1.getState().displayState();
+    //     }
 
         
 
-        // Buat node anak kedua: gerakkan mobil A ke bawah sejauh 1
-        Board board2 = new Board(board1); // duplikat papan
-        if (board2.move('A', -1)) {
-            BoardState state2 = new BoardState(board2, -1, 'A');
-            BoardNode node2 = new BoardNode(state2, 0, 1, rootNode);
-            System.out.println("=== Node Anak 2: A ke bawah ===");
-            node2.getState().displayState();
-            board.move('A', 1);
-            node2.getState().displayState();
-        }else{
-            System.out.println("Kontol");
-        }
+    //     // Buat node anak kedua: gerakkan mobil A ke bawah sejauh 1
+    //     Board board2 = new Board(board1); // duplikat papan
+    //     if (board2.move('A', -1)) {
+    //         BoardState state2 = new BoardState(board2, -1, 'A');
+    //         BoardNode node2 = new BoardNode(state2, 0, 1, rootNode);
+    //         System.out.println("=== Node Anak 2: A ke bawah ===");
+    //         node2.getState().displayState();
+    //         board.move('A', 1);
+    //         node2.getState().displayState();
+    //     }else{
+    //         System.out.println("Kontol");
+    //     }
 
 
-        // Buat node anak ketiga: gerakkan mobil X (redCar) ke kanan sejauh 1
-        Board board3 = new Board(board2);
-        if (board3.move('P', 1)) {
-            BoardState state3 = new BoardState(board3, 1, 'P');
-            BoardNode node3 = new BoardNode(state3, 0, 1, rootNode);
-            System.out.println("=== Node Anak 3: X ke kanan ===");
-            node3.getState().displayState();
-        }
+    //     // Buat node anak ketiga: gerakkan mobil X (redCar) ke kanan sejauh 1
+    //     Board board3 = new Board(board2);
+    //     if (board3.move('P', 1)) {
+    //         BoardState state3 = new BoardState(board3, 1, 'P');
+    //         BoardNode node3 = new BoardNode(state3, 0, 1, rootNode);
+    //         System.out.println("=== Node Anak 3: X ke kanan ===");
+    //         node3.getState().displayState();
+    //     }
     }
 
 }

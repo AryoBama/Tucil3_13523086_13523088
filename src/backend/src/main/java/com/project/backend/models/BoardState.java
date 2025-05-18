@@ -1,4 +1,5 @@
-package backend.models;
+package com.project.backend.models;
+
 
 import java.util.Arrays;
 
@@ -8,30 +9,44 @@ public class BoardState {
     private Character[][] grid;
     private int step;
     private Car car;
+    private String directions;
     
     public BoardState(Board board, int step, Character carId){
         this.grid = board.getGrid();
         this.step = step;
         this.car = board.getCarById(carId);
+        if (this.car == null) return;
+        if (this.car.getOrientation().equals("horizontal")){
+            if (step > 0){
+                directions = "right";
+            }else{
+                directions = "left";
+            }
+        }else{
+            if (step > 0){
+                directions = "down";
+            }else{
+                directions = "up";
+            }
+        }
     }
 
     public void displayState(){
-        String directions = " ";
-
+    
         if (this.car == null){
             System.out.println("Permainan dimulai");
         }
         else if (this.car.getOrientation().equals("horizontal")){
             if (step > 0){
-                directions = "kanan";
+                directions = "right";
             }else{
-                directions = "kiri";
+                directions = "left";
             }
         }else{
             if (step > 0){
-                directions = "bawah";
+                directions = "down";
             }else{
-                directions = "atas";
+                directions = "up";
             }
         }
         if(this.car != null){
@@ -63,4 +78,21 @@ public class BoardState {
     public int hashCode() {
         return Arrays.deepHashCode(this.grid);
     }
+
+    public Character[][] getGrid(){
+        return this.grid;
+    }
+
+    public int getStep(){
+        return this.step;
+    }
+
+    public Car getCar(){
+        return this.car;
+    }
+
+    public String getDirections(){
+        return this.directions;
+    }
+
 }

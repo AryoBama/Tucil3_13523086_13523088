@@ -1,0 +1,7 @@
+{
+    "width": 3,
+    "height": 3,
+    "grid": [["A","A","A"], ["P","P","B"],[".",".","B"]],
+    "exitRow" : 6,
+    "exitCol": 5
+}

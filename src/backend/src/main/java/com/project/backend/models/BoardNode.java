@@ -1,4 +1,5 @@
-package backend.models;
+package com.project.backend.models;
+
 
 public class BoardNode {
 
@@ -16,7 +17,7 @@ public class BoardNode {
         this.parent = parent;
     }
 
-    public BoardNode(Board board, BoardState state, int h, int g, BoardNode parent, int step, Character carId){
+    public BoardNode(Board board, int h, int g, BoardNode parent, int step, Character carId){
         this.board = board;
         this.state = new BoardState(board, step, carId);
         this.h = h;
