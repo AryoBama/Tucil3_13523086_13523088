@@ -1,6 +1,8 @@
-package backend.algorithms;
+package com.project.backend.algorithms.UCS;
 
-import backend.models.*;
+import com.project.backend.heuristic.BlockingCar;
+import com.project.backend.heuristic.CountHeuristic;
+import com.project.backend.models.*;
 
 public class Test {
     public static void main(String[] args){
@@ -47,6 +49,31 @@ public class Test {
         board.addCar(main, 2, 3);
         board.displayBoard();
 
+        CountHeuristic heuristic = new BlockingCar();
+        System.out.println("Banyak mobil penghalang: " + heuristic.getValue(board));
+
+        board.move('D', -1);
+        board.displayBoard();
+        System.out.println("Banyak mobil penghalang: " + heuristic.getValue(board));
+
+        board.move('B', 1);
+        board.displayBoard();
+        System.out.println("Banyak mobil penghalang: " + heuristic.getValue(board));
+
+        board.move('F', 1);
+        board.displayBoard();
+        System.out.println("Banyak mobil penghalang: " + heuristic.getValue(board));
+        
+        board.move('B', -1);
+        board.displayBoard();
+        System.out.println("Banyak mobil penghalang: " + heuristic.getValue(board));
+
+        long startTime = System.nanoTime();
+
         UCS.solveUCS(board);
+        long endTime = System.nanoTime();
+        long duration = endTime - startTime;
+        System.out.println("Waktu eksekusi: " + duration + " nanodetik");
+        System.out.println("Atau: " + (duration / 1_000_000.0) + " milidetik");
     }
 }

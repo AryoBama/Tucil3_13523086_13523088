@@ -1,5 +1,5 @@
-package backend.algorithms;
-import backend.models.*;
+package com.project.backend.algorithms.AStar;
+
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -8,13 +8,19 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-public class UCS {
-    
-    public static void solveUCS(Board board){
+import com.project.backend.heuristic.CountHeuristic;
+import com.project.backend.models.Board;
+import com.project.backend.models.BoardNode;
+import com.project.backend.models.BoardState;
+import com.project.backend.models.Car;
+
+public class AStar {
+
+    public static void solveAStar(Board board, CountHeuristic heuristic){
 
         boolean found = false;
 
-        Comparator<BoardNode> minHeap = (a, b) -> Integer.compare(a.getG(), b.getG());
+        Comparator<BoardNode> minHeap = (a, b) -> Integer.compare(a.getG() + a.getH(), b.getG() + b.getH());
 
         PriorityQueue<BoardNode> pq = new PriorityQueue<>(minHeap);
 
@@ -31,8 +37,6 @@ public class UCS {
             currentNode = pq.poll();
             Board currentBoard = currentNode.getBoard();
 
-            // currentBoard.displayBoard();
-            
             if (currentBoard.isSolve()){
                 found = true;
                 break;
@@ -55,7 +59,7 @@ public class UCS {
                         Board newBoard = new Board(currentBoard);
                         newBoard.move(car.getId(), step);
 
-                        BoardNode nextNode = new BoardNode(newBoard,currentNode.getG() + 1, currentNode, step, car.getId());
+                        BoardNode nextNode = new BoardNode(newBoard, heuristic.getValue(newBoard), currentNode.getG() + 1,currentNode, step, car.getId());
                         BoardState nextState = new BoardState(newBoard, step, car.getId());
 
                         if(visited.contains(nextState)){
@@ -75,7 +79,7 @@ public class UCS {
                         Board newBoard = new Board(currentBoard);
                         newBoard.move(car.getId(), step);
 
-                        BoardNode nextNode = new BoardNode(newBoard,currentNode.getG() + 1, currentNode, step, car.getId());
+                        BoardNode nextNode = new BoardNode(newBoard, heuristic.getValue(newBoard), currentNode.getG() + 1, currentNode, step, car.getId());
                         BoardState nextState = new BoardState(newBoard, step, car.getId());
 
                         if(visited.contains(nextState)){
@@ -94,7 +98,7 @@ public class UCS {
                         Board newBoard = new Board(currentBoard);
                         newBoard.move(car.getId(), step);
 
-                        BoardNode nextNode = new BoardNode(newBoard,currentNode.getG() + 1, currentNode, step, car.getId());
+                        BoardNode nextNode = new BoardNode(newBoard, heuristic.getValue(newBoard), currentNode.getG() + 1, currentNode, step, car.getId());
                         BoardState nextState = new BoardState(newBoard, step, car.getId());
 
                         if(visited.contains(nextState)){
@@ -114,7 +118,7 @@ public class UCS {
                         Board newBoard = new Board(currentBoard);
                         newBoard.move(car.getId(), step);
 
-                        BoardNode nextNode = new BoardNode(newBoard,currentNode.getG() + 1, currentNode, step, car.getId());
+                        BoardNode nextNode = new BoardNode(newBoard, heuristic.getValue(newBoard), currentNode.getG() + 1, currentNode, step, car.getId());
                         BoardState nextState = new BoardState(newBoard, step, car.getId());
 
                         if(visited.contains(nextState)){
@@ -146,4 +150,7 @@ public class UCS {
             cnt++;
         }
     }
+
+    
+
 }

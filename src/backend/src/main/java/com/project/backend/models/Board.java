@@ -1,4 +1,4 @@
-package backend.models;
+package com.project.backend.models;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,25 +44,25 @@ public class Board{
         }
    }
 
-    public void addCar(Car car, int startRow, int startCol){
+    public boolean addCar(Car car, int startRow, int startCol){
 
         if (startRow >= height || startCol >= width){
             System.err.println("Tidak boleh melebihi batas papan");
-            return;
+            return false;
         }
 
         if (car.getOrientation().equals("horizontal")) {
             for (int i = startCol; i < startCol + car.getLength(); i++) {
                 if (this.grid[startRow][i] != '.') {
                     System.out.println("Tertabrak");
-                    return;
+                    return false;
                 }
             }
         }else{
             for (int i = startRow; i < startRow + car.getLength(); i++) {
                 if (this.grid[i][startCol] != '.') {
                     System.out.println("Tertabrak");
-                    return;
+                    return false;
                 }
             }
         }
@@ -81,6 +81,7 @@ public class Board{
         }
 
         this.cars.put(car.getId(), car);
+        return true;
     }
 
     public boolean removeCar(Character carId){
@@ -287,7 +288,7 @@ public class Board{
             }
         }else{
             if (startRow < this.exitRow){
-                for (int i = mainCar.getLength() + startRow; i < this.width; i++){
+                for (int i = mainCar.getLength() + startRow; i < this.height; i++){
                     if (!isSpaceEmpty(i, startCol)){
                         return false;
                     }
