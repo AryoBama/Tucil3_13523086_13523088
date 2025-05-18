@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { PuzzleSolver } from "../lib/puzzle-solver"
 import { sendParsedData, parseInputFile} from "../lib/parser"
 import { Board } from "../components/board"
 import { StepDisplay } from "../components/step-display"
@@ -14,6 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 
 export default function Home() {
+  const [exitRow, setExitRow] = useState<number | null>(null);
+  const [exitCol, setExitCol] = useState<number | null>(null);    
   const [inputText, setInputText] = useState<string>("")
   const [algorithm, setAlgorithm] = useState<string>("astar")
   const [heuristic, setHeuristic] = useState<string>("manhattan")
@@ -29,8 +30,9 @@ export default function Home() {
     setInputText(content)
     try {
       const parsedPuzzle = parseInputFile(content)
-      sendParsedData(content)
       setPuzzle(parsedPuzzle)
+      setExitRow(parsedPuzzle.dimensions[0])
+      setExitCol(parsedPuzzle.dimensions[1])
       setSolution(null)
       setCurrentStep(0)
       setStats(null)
@@ -45,6 +47,8 @@ export default function Home() {
     try {
       const parsedPuzzle = parseInputFile(puzzleText)
       setPuzzle(parsedPuzzle)
+      setExitRow(parsedPuzzle.dimensions[0])
+      setExitCol(parsedPuzzle.dimensions[1])
       setSolution(null)
       setCurrentStep(0)
       setStats(null)
@@ -55,36 +59,34 @@ export default function Home() {
     }
   }
 
-  const solvePuzzle = (puzzleText: string) => {
-    sendParsedData(puzzleText)
-    if (!puzzle) return
+  const solvePuzzle = async (puzzleText: string) => {
+    setIsLoading(true);
 
-    setIsLoading(true)
+    try {
+      // Send to backend and get the response
+      const backendResult = await sendParsedData(puzzleText);
 
-    // Use setTimeout to allow UI to update before heavy computation
-    setTimeout(() => {
-      try {
-        const solver = new PuzzleSolver(puzzle, algorithm, heuristic)
-        const startTime = performance.now()
-        const result = solver.solve()
-        const endTime = performance.now()
-
-        if (result) {
-          setSolution(result)
-          setStats({
-            nodesVisited: solver.getNodesVisited(),
-            executionTime: endTime - startTime,
-          })
-        } else {
-          alert("No solution found!")
-        }
-      } catch (error) {
-        console.error("Error solving puzzle:", error)
-        alert("Error solving puzzle: " + (error as Error).message)
-      } finally {
-        setIsLoading(false)
+      if (!backendResult) {
+        alert("No solution found or backend error!");
+        setIsLoading(false);
+        return;
       }
-    }, 100)
+
+      // If your backend returns { puzzle, solution }, use them directly.
+      // If it returns just solution, adjust accordingly.
+      setPuzzle(backendResult.puzzle || puzzle); // fallback to current puzzle if not sent back
+      setSolution(backendResult.solution || backendResult);
+
+      // Optionally, set stats if your backend returns them
+      if (backendResult.stats) {
+        setStats(backendResult.stats);
+      }
+    } catch (error) {
+      console.error("Error solving puzzle:", error);
+      alert("Error solving puzzle: " + (error as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const handleNext = () => {
@@ -207,7 +209,13 @@ export default function Home() {
                 <CardContent className="pt-6">
                   {puzzle && (
                     <div className="flex flex-col items-center">
-                      <Board puzzle={puzzle} solution={solution} currentStep={currentStep} />
+                      <Board
+                        puzzle={puzzle}
+                        solution={solution}
+                        currentStep={currentStep}
+                        exitRow={exitRow ?? 0}
+                        exitCol={exitCol ?? 0}
+                      />
 
                       {solution && (
                         <div className="flex gap-2 mt-4">
@@ -235,7 +243,7 @@ export default function Home() {
               <Card>
                 <CardContent className="pt-6">
                   {solution ? (
-                    <StepDisplay puzzle={puzzle} solution={solution} />
+                    <StepDisplay puzzle={puzzle} solution={solution} exitRow={exitRow} exitCol={exitCol} />
                   ) : (
                     <p className="text-center text-muted-foreground">Solve the puzzle to see step-by-step solution</p>
                   )}

@@ -2,49 +2,49 @@ export function parseInputFile(input: string): any {
   const lines = input.trim().split("\n")
 
   // Parse first line for dimensions and number of pieces
-  let [A, B] = lines[0].split(" ").map(Number)
+  let [row, col] = lines[0].split(" ").map(Number)
   let N = Number(lines[1])
     
-  if (isNaN(A) || isNaN(B) || isNaN(N)) {
+  if (isNaN(row) || isNaN(col) || isNaN(N)) {
     throw new Error("Invalid dimensions or number of pieces")
   }
 
 
     const exitOnHorizontal = lines
-  .slice(2, 2 + A)
-  .some(line => line.trimEnd().length === B + 1);
+  .slice(2, 2 + row)
+  .some(line => line.trimEnd().length === col + 1);
 
 
     const exitOnVertical = !exitOnHorizontal;
 
     if(exitOnVertical) {
-        A++;
+        row++;
     }
     else{
-        B++;
+        col++;
     }
 
-    const boardLines = lines.slice(2, 2 + A + (exitOnVertical ? 1 : 0)).map(l => l.trimEnd());
+    const boardLines = lines.slice(2, 2 + row + (exitOnVertical ? 1 : 0)).map(l => l.trimEnd());
 
     if (exitOnHorizontal) {
         let foundExit = false;
         let countPossibleExit = 0;
         for (const line of boardLines) {
-            if(line.length == B){
+            if(line.length == col){
                 countPossibleExit ++;
             }
         }
-        if(countPossibleExit != 1 && countPossibleExit != A){
+        if(countPossibleExit != 1 && countPossibleExit != row){
             throw new Error(`Wrong formatting`);
         }
 
     } else if (exitOnVertical) {
-        if (boardLines.length !== A) {
-            throw new Error(`Expected ${A} rows for vertical exit, got ${boardLines.length}`);
+        if (boardLines.length !== row) {
+            throw new Error(`Expected ${row} rows for vertical exit, got ${boardLines.length}`);
         }
         let top = 0;
         let bot = 0;
-        // Validate all rows except the extra one have length B
+        // Validate all rows except the extra one have length col
         for(let i = 0; i < boardLines[0].length; i++){
             if(boardLines[0][i] === 'K'){
                 top = 1;
@@ -56,11 +56,11 @@ export function parseInputFile(input: string): any {
 
         for (let i = 0 + top; i < boardLines.length - bot; i++) {
             const line = boardLines[i];
-            if (i < A && line.length !== B && line.length !== 1) {
-                throw new Error(`Expected row length ${B - 1} for row ${i + 1}, got ${line.length}`);
+            if (i < row && line.length !== col && line.length !== 1) {
+                throw new Error(`Expected row length ${col - 1} for row ${i + 1}, got ${line.length}`);
             }
-            if (i === A && line.length !== B) {
-                throw new Error(`Expected last row length ${B - 1} for exit row, got ${line.length}`);
+            if (i === row && line.length !== col) {
+                throw new Error(`Expected last row length ${col - 1} for exit row, got ${line.length}`);
             }
         }
         // Optionally, count or validate exit position in last row
@@ -76,8 +76,8 @@ export function parseInputFile(input: string): any {
   const primaryPiecePositions: [number, number][] = []
   let exitPosition: [number, number] | null = null
 
-  for (let i = 0; i < A; i++) {
-    for (let j = 0; j < B; j++) {
+  for (let i = 0; i < row; i++) {
+    for (let j = 0; j < col; j++) {
       if (initialBoard[i][j] === "P") {
         primaryPieceFound = true
         primaryPiecePositions.push([i, j])
@@ -102,7 +102,7 @@ export function parseInputFile(input: string): any {
   // Validate exit position (must be on the edge and aligned with primary piece)
   if (exitPosition) {
     const [exitRow, exitCol] = exitPosition
-    const isOnEdge = exitRow === 0 || exitRow === A - 1 || exitCol === 0 || exitCol === B - 1
+    const isOnEdge = exitRow === 0 || exitRow === row - 1 || exitCol === 0 || exitCol === col - 1
 
     if (!isOnEdge) {
       throw new Error("Exit must be on the edge of the board")
@@ -119,35 +119,51 @@ export function parseInputFile(input: string): any {
   // Find all pieces on the board
   const pieces = new Map<string, [number, number][]>()
 
-  for (let i = 0; i < A; i++) {
-    for (let j = 0; j < B; j++) {
+  for (let i = 0; i < row; i++) {
+    for (let j = 0; j < col; j++) {
       const cell = initialBoard[i][j]
-      if (cell !== "." && cell !== "K") {
+      if (cell !== "." && cell !== "K" && cell !== " " && cell) {
         if (!pieces.has(cell)) {
           pieces.set(cell, [])
         }
-        pieces.get(cell)?.push([i, j])
+        
+        if (exitPosition && exitPosition[0] === 0) {
+          if (i - 1 >= 0) {
+            pieces.get(cell)?.push([i - 1, j]);
+          }
+        } else if (exitPosition && exitPosition[1] === 0) {
+          if (j - 1 >= 0) {
+            pieces.get(cell)?.push([i, j - 1]);
+          }
+        } else {
+          pieces.get(cell)?.push([i, j]);
+        }
       }
     }
   }
-
+  console.log(pieces)
   // Validate number of pieces
   if (pieces.size - 1 !== N) {
     // -1 for primary piece
     console.warn(`Warning: Expected ${N} pieces (excluding primary piece), found ${pieces.size - 1}`)
   }
 
-  if(exitOnVertical) {
-        A--;
-    }
-    else{
-        B--;
-    }
-
+  
+  let originA = row;
+  let originB = col;
+  console.log(row, col, exitPosition)
+  if(exitOnVertical){
+    row--;
+  } else{
+    col--
+  }
+  console.log(row, col, exitPosition)
+  
   return {
-    dimensions: [A, B],
+    dimensions: [originA, originB],
     numPieces: N,
     initialBoard,
+    exitOnVertical: exitOnVertical,
     primaryPiece: {
       positions: primaryPiecePositions,
       isHorizontal,
@@ -158,7 +174,15 @@ export function parseInputFile(input: string): any {
       positions,
       isHorizontal: positions.length > 1 && positions[0][0] === positions[1][0],
     })),
-    grid: createGridFromPieces(pieces, A, B)
+    grid: createGridFromPieces(
+      Array.from(pieces.entries()).map(([symbol, positions]) => ({
+        symbol,
+        positions,
+        isHorizontal: positions.length > 1 && positions[0][0] === positions[1][0],
+      })),
+      row,
+      col
+    )
   }
 }
 
@@ -180,29 +204,130 @@ function createGridFromPieces(pieces: any, rows: number, cols: number):any {
 export async function sendParsedData(input: string) {
   try {
     const parsedData = await parseInputFile(input);
+    let sendedCol =  parsedData.dimensions[0];
+    let sendedRow =  parsedData.dimensions[1];
+    let sendedExitRow = parsedData.exit[0]
+    let sendedExitCol = parsedData.exit[1]
 
-    const url = '://your-server-endpoint.com/api/dhttpsata';
+    if(parsedData.exitOnVertical){
+      sendedCol = parsedData.dimensions[0] - 1;
+    }else{
+      sendedRow = parsedData.dimensions[1] - 1;
+    }
+     if (parsedData.exit[0] === 0) {
+       sendedExitRow =  parsedData.exit[0] - 1
+      }
+      if (parsedData.exit[1] === 0) {
+        sendedExitCol = parsedData.exit[1] - 1
+      }
+      
+
+    console.log(parsedData.grid)
+    console.log(sendedExitRow)
+    console.log(sendedExitRow)
+    const url = 'http://localhost:8080/api/solve/UCS';
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'width': parsedData.dimensions[0] ,
-        'height': parsedData.dimensions[1],
-        'grid': parsedData.grid,
-        'exitRow': parsedData.exit[0],
-        'exitCol': parsedData.exit[1]
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(parsedData),
+      body: JSON.stringify({
+        width: sendedCol,
+        height: sendedRow,
+        grid: parsedData.grid,
+        exitRow: sendedExitRow,
+        exitCol:sendedExitCol
+      }),
     });
-
-    // Check if the request was successful
+    
     if (response.ok) {
-      const responseData = await response.json();
-      console.log('Data posted successfully:', responseData);
-    } else {
-      console.error('Failed to send data:', response.statusText);
+    const responseData = await response.json();
+    console.log(responseData.steps)
+    
+    const initialRows = parsedData.dimensions[0];
+    const initialCols = parsedData.dimensions[1];
+    const exitRow = parsedData.exit[0];
+    const exitCol = parsedData.exit[1];
+
+  
+    if (responseData.solution && Array.isArray(responseData.solution.steps)) {
+      responseData.solution.steps = responseData.solution.steps.map((step: any) => ({
+        ...step,
+        board: padBoardWithExit(step.board, initialRows, initialCols, exitRow, exitCol)
+      }));
+    } else if (Array.isArray(responseData.steps)) {
+      responseData.steps = responseData.steps.map((step: any) => ({
+        ...step,
+        board: padBoardWithExit(step.board, initialRows, initialCols, exitRow, exitCol)
+      }));
     }
-  } catch (error) {
-    console.error('Error while sending data:', error);
+        return responseData; 
+      } else {
+        console.error('Failed to send data:', response.statusText);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error while sending data:', error);
+      return null;
+    }
   }
+
+function padBoardWithExit(
+  board: string[][],
+  rows: number,
+  cols: number,
+  exitRow: number,
+  exitCol: number
+) {
+  let padded: string[][];
+
+  // Exit on top
+  if (exitRow === 0) {
+    padded = [
+      Array.from({ length: cols }, (_, c) => (c === exitCol ? "K" : ".")),
+      ...Array.from({ length: rows - 1 }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => board[r]?.[c] ?? ".")
+      ),
+    ];
+  }
+  // Exit on bottom
+  else if (exitRow === rows - 1) {
+    padded = [
+      ...Array.from({ length: rows - 1 }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => board[r]?.[c] ?? ".")
+      ),
+      Array.from({ length: cols }, (_, c) => (c === exitCol ? "K" : ".")),
+    ];
+  }
+  // Exit on left
+  else if (exitCol === 0) {
+    padded = Array.from({ length: rows }, (_, r) => [
+      r === exitRow ? "K" : ".",
+      ...Array.from({ length: cols - 1 }, (_, c) => board[r]?.[c] ?? "."),
+    ]);
+  }
+  // Exit on right
+  else if (exitCol === cols - 1) {
+    padded = Array.from({ length: rows }, (_, r) => [
+      ...Array.from({ length: cols - 1 }, (_, c) => board[r]?.[c] ?? "."),
+      r === exitRow ? "K" : ".",
+    ]);
+  }
+  // Fallback: no padding, just fill as usual
+  else {
+    padded = Array.from({ length: rows }, (_, r) =>
+      Array.from({ length: cols }, (_, c) => board[r]?.[c] ?? ".")
+    );
+    if (
+      exitRow >= 0 &&
+      exitRow < rows &&
+      exitCol >= 0 &&
+      exitCol < cols
+    ) {
+      padded[exitRow][exitCol] = "K";
+    }
+  }
+
+  return padded;
 }

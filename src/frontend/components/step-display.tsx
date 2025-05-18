@@ -4,10 +4,13 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Board } from "@/components/board"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { sendParsedData } from "@/lib/parser"
 
 interface StepDisplayProps {
   puzzle: any
   solution: any
+  exitRow: any
+  exitCol: any
 }
 
 export function StepDisplay({ puzzle, solution }: StepDisplayProps) {
@@ -55,7 +58,13 @@ export function StepDisplay({ puzzle, solution }: StepDisplayProps) {
       </div>
 
       <div className="flex justify-center">
-        <Board puzzle={puzzle} solution={solution} currentStep={currentStep} />
+        <Board
+          puzzle={puzzle}
+          solution={solution}
+          currentStep={currentStep}
+          exitRow={puzzle.exitRow}
+          exitCol={puzzle.exitCol}
+        />
       </div>
 
       <div className="space-y-4">
@@ -76,6 +85,42 @@ export function StepDisplay({ puzzle, solution }: StepDisplayProps) {
           ))}
         </div>
       </div>
+    </div>
+  )
+}
+
+// Example: src/frontend/app/solver-page.tsx
+export default function SolverPage() {
+  const [puzzle, setPuzzle] = useState<any>(null)
+  const [solution, setSolution] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+
+  // Call this when you want to send input and get the solution
+  const handleSolve = async (input: string) => {
+    setLoading(true)
+    const data = await sendParsedData(input)
+    setLoading(false)
+    if (data) {
+      setPuzzle(data.puzzle) // adjust if your backend returns a different structure
+      setSolution(data.solution) // adjust if your backend returns a different structure
+    }
+  }
+
+  // Example usage: call handleSolve with your puzzle input string
+  // handleSolve("your puzzle input here");
+
+  return (
+    <div>
+      {/* Add your input UI and a button to trigger handleSolve */}
+      {loading && <div>Loading...</div>}
+      {puzzle && solution && (
+        <StepDisplay
+          puzzle={puzzle}
+          solution={solution}
+          exitRow={puzzle.exitRow}
+          exitCol={puzzle.exitCol}
+        />
+      )}
     </div>
   )
 }
