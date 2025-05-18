@@ -7,7 +7,7 @@ public class BlockingCar implements CountHeuristic {
     @Override
     public int getValue(Board b){
 
-        int countCar = 0; // For counting blocking car
+        int countCar = 0;
 
         Car mainCar = b.getCarById('P');
 

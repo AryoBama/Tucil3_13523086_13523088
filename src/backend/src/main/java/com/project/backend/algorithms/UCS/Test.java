@@ -1,8 +1,13 @@
 package com.project.backend.algorithms.UCS;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.project.backend.heuristic.BlockingCar;
 import com.project.backend.heuristic.CountHeuristic;
-import com.project.backend.models.*;
+import com.project.backend.models.Board;
+import com.project.backend.models.BoardNode;
+import com.project.backend.models.Car;
 
 public class Test {
     public static void main(String[] args){
@@ -70,7 +75,9 @@ public class Test {
 
         long startTime = System.nanoTime();
 
-        UCS.solveUCS(board);
+        List<BoardNode> result = new LinkedList<>();
+
+        UCS.solveUCS(board,result);
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
         System.out.println("Waktu eksekusi: " + duration + " nanodetik");

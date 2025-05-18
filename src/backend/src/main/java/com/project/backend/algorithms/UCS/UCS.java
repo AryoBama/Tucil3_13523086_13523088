@@ -1,7 +1,6 @@
 package com.project.backend.algorithms.UCS;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -14,7 +13,7 @@ import com.project.backend.models.Car;
 
 public class UCS {
     
-    public static List<BoardNode> solveUCS(Board board){
+    public static int solveUCS(Board board, List<BoardNode> result){
 
         boolean found = false;
 
@@ -33,6 +32,7 @@ public class UCS {
         while (!pq.isEmpty()){
 
             currentNode = pq.poll();
+            
             Board currentBoard = currentNode.getBoard();
 
             if (currentBoard.isSolve()){
@@ -65,6 +65,7 @@ public class UCS {
                         }
                         pq.add(nextNode);
                         visited.add(nextState);
+                    
                     }
 
                     step = 0;
@@ -131,10 +132,8 @@ public class UCS {
 
         if(!found || currentNode == null){
             System.out.println("Tidak ada solusi yang ditemukan");
-            return null;
+            return visited.size();
         }
-
-        List<BoardNode> result = new LinkedList<>();
 
         while(currentNode.getParent() != null){
             result.addFirst(currentNode);
@@ -147,6 +146,6 @@ public class UCS {
         //     System.out.println("");
         //     cnt++;
         // }
-        return result;
+        return visited.size();
     }
 }
