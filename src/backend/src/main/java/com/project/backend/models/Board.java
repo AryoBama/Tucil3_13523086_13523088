@@ -294,7 +294,7 @@ public class Board{
                     }
                 }
             }else{
-                for (int i = startRow + 1; i >= 0; i--){
+                for (int i = startRow - 1; i >= 0; i--){
                     if (!isSpaceEmpty(i, startCol)){
                         return false;
                     }
