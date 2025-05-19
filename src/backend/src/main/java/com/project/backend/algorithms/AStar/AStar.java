@@ -2,7 +2,6 @@ package com.project.backend.algorithms.AStar;
 
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -16,7 +15,7 @@ import com.project.backend.models.Car;
 
 public class AStar {
 
-    public static void solveAStar(Board board, CountHeuristic heuristic){
+    public static int solveAStar(Board board, CountHeuristic heuristic, List<BoardState> result){
 
         boolean found = false;
 
@@ -133,22 +132,15 @@ public class AStar {
 
         if(!found || currentNode == null){
             System.out.println("Tidak ada solusi yang ditemukan");
-            return;
         }
 
-        List<BoardNode> result = new LinkedList<>();
 
         while(currentNode.getParent() != null){
-            result.addFirst(currentNode);
+            result.addFirst(currentNode.getState());
             currentNode =  currentNode.getParent();
         }
-        int cnt = 1;
-        for(BoardNode node: result){
-            System.out.println("Gerakan ke- " + cnt);
-            node.getState().displayState();
-            System.out.println("");
-            cnt++;
-        }
+
+        return visited.size();
     }
 
     
