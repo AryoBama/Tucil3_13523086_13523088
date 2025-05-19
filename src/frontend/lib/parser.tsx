@@ -218,7 +218,7 @@ function createGridFromPieces(pieces: any, rows: number, cols: number):any {
 }
 
 
-export async function sendParsedData(input: string) {
+export async function sendParsedData(input: string, algorithm: string, heuristic:string) {
   try {
     const parsedData = await parseInputFile(input);
     let sendedCol =  parsedData.dimensions[0];
@@ -243,7 +243,8 @@ export async function sendParsedData(input: string) {
     console.log(parsedData.initialBoard)
     console.log(sendedExitCol)
     
-    const url = 'http://localhost:8080/api/solve/UCS';
+    const url = `http://localhost:8080/api/solve/${algorithm}?heuristic=${heuristic}`;
+    console.log(url)
 
     const response = await fetch(url, {
       method: 'POST',

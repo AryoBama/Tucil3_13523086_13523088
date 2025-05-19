@@ -39,6 +39,10 @@ public class IDA {
             System.out.println("No solution");
             return cntNode;
         }
+        Board finalBoard = resultNode.getBoard();
+        Board newBoard = new Board(finalBoard);
+        newBoard.finalMove();
+        resultNode = new BoardNode(newBoard,0,0,resultNode,0,'P');
         while(resultNode.getParent() != null){
             result.addFirst(resultNode.getState());
             resultNode =  resultNode.getParent();
@@ -149,16 +153,16 @@ public class IDA {
 
         for (Car car : board.getCars().values()) {
             int length = car.getLength();
-            int multiplier = 1; 
+            int multiplier = 2; 
 
             if (car.getOrientation().equals("horizontal")) {
                 // posisi horizontal: (w - Li) * (h - 1)
                 int movablePositions = board.getWidth() - length;
-                maxMoves += multiplier * movablePositions * (board.getHeight() - 1);
+                maxMoves += multiplier * movablePositions * multiplier;
             } else {
                 // posisi vertikal: (h - Li) * (w - 1)
                 int movablePositions = board.getHeight() - length;
-                maxMoves += multiplier * movablePositions * (board.getWidth() - 1);
+                maxMoves += multiplier * movablePositions * multiplier;
             }
         }
 

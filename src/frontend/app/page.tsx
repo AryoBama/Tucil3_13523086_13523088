@@ -16,8 +16,8 @@ export default function Home() {
   const [exitRow, setExitRow] = useState<number | null>(null);
   const [exitCol, setExitCol] = useState<number | null>(null);    
   const [inputText, setInputText] = useState<string>("")
-  const [algorithm, setAlgorithm] = useState<string>("astar")
-  const [heuristic, setHeuristic] = useState<string>("manhattan")
+  const [algorithm, setAlgorithm] = useState<string>("AStar")
+  const [heuristic, setHeuristic] = useState<string>("BlockingChain")
   const [puzzle, setPuzzle] = useState<any>(null)
   const [solution, setSolution] = useState<any>(null)
   const [currentStep, setCurrentStep] = useState<number>(0)
@@ -59,11 +59,11 @@ export default function Home() {
     }
   }
 
-  const solvePuzzle = async (puzzleText: string) => {
+  const solvePuzzle = async (puzzleText: string, algorithm: string, heuristic: string) => {
     setIsLoading(true);
 
     try {
-      const backendResult = await sendParsedData(puzzleText);
+      const backendResult = await sendParsedData(puzzleText, algorithm, heuristic);
       console.log(backendResult)
 
       setStats({
@@ -98,7 +98,7 @@ export default function Home() {
 
     setIsAnimating(true);
 
-    let stepDelay = 300; 
+    const stepDelay = 300; 
 
     let stepIndex = currentStep;
 
@@ -157,10 +157,10 @@ export default function Home() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <AlgorithmSelector value={algorithm} onChange={setAlgorithm} />
 
-                    <HeuristicSelector value={heuristic} onChange={setHeuristic} disabled={algorithm !== "astar"} />
+                    <HeuristicSelector value={heuristic} onChange={setHeuristic} disabled={algorithm !== "AStar"} />
                   </div>
 
-                  <Button onClick={() => solvePuzzle(inputText)} disabled={!puzzle || isLoading} className="w-full">
+                  <Button onClick={() => solvePuzzle(inputText, algorithm, heuristic)} disabled={!puzzle || isLoading} className="w-full">
                     {isLoading ? "Solving..." : "Solve Puzzle"}
                   </Button>
                 </div>

@@ -14,7 +14,7 @@ import com.project.backend.models.Car;
 
 public class GBFS {
     
-    public static int solveGBFS(Board board, CountHeuristic heuristic, List<BoardNode> result){
+    public static int solveGBFS(Board board, CountHeuristic heuristic, List<BoardState> result){
 
         boolean found = false;
 
@@ -37,6 +37,10 @@ public class GBFS {
 
             if (currentBoard.isSolve()){
                 found = true;
+                Board newBoard = new Board(currentBoard);
+                newBoard.finalMove();
+                
+                currentNode = new BoardNode(newBoard,0,0,currentNode,0,'P');
                 break;
             }
             Map<Character, Car> cars = currentBoard.getCars();
@@ -135,7 +139,7 @@ public class GBFS {
         }
 
         while(currentNode.getParent() != null){
-            result.addFirst(currentNode);
+            result.addFirst(currentNode.getState());
             currentNode =  currentNode.getParent();
         }
         // int cnt = 1;

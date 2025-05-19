@@ -37,6 +37,10 @@ public class UCS {
 
             if (currentBoard.isSolve()){
                 found = true;
+                Board newBoard = new Board(currentBoard);
+                newBoard.finalMove();
+                
+                currentNode = new BoardNode(newBoard,0,0,currentNode,0,'P');
                 break;
             }
             Map<Character, Car> cars = currentBoard.getCars();

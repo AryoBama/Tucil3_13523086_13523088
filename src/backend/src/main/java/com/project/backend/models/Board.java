@@ -85,6 +85,29 @@ public class Board{
         return true;
     }
 
+    public int finalMove(){
+
+        Car main = getCarById('P');
+        int startCol = main.getStartCol();
+        int startRow = main.getStartRow();
+        if (!isSolve()){
+            return 0;
+        }
+        for (int i = 0; i < this.width; i++){
+            for (int j = 0; j < this.height; j++){
+                if (grid[i][j] == 'P'){
+                    grid[i][j] = '.';
+                }
+            }
+        }
+
+        if (main.getOrientation().equals("horizontal")){
+            return startCol < exitCol ? 1 : -1;
+        }else{
+            return startRow < exitRow ? 1 : -1;
+        }
+    }
+
     public boolean removeCar(Character carId){
         if (!cars.containsKey(carId)){
             return false;
