@@ -242,6 +242,7 @@ export async function sendParsedData(input: string) {
     console.log(parsedData.grid)
     console.log(parsedData.initialBoard)
     console.log(sendedExitCol)
+    
     const url = 'http://localhost:8080/api/solve/UCS';
 
     const response = await fetch(url, {

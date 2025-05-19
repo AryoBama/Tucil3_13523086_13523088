@@ -166,37 +166,11 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Statistics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {stats ? (
-                  <div className="space-y-2">
-                    <p>
-                      <strong>Nodes Visited:</strong> {stats.nodesVisited}
-                    </p>
-                    <p>
-                      <strong>Execution Time:</strong> {stats.executionTime.toFixed(2)} ms
-                    </p>
-                    <p>
-                      <strong>Solution Steps:</strong> {solution?.steps.length || 0}
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground">Solve the puzzle to see statistics</p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          <Tabs defaultValue="visualization" className="mt-6">
+            <Tabs defaultValue="visualization" className="mt-6">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="visualization">Visualization</TabsTrigger>
               <TabsTrigger value="steps">Step-by-Step</TabsTrigger>
             </TabsList>
-
             <TabsContent value="visualization" className="mt-4">
               <Card>
                 <CardContent className="pt-6">
@@ -243,7 +217,31 @@ export default function Home() {
                 </CardContent>
               </Card>
             </TabsContent>
-          </Tabs>
+            </Tabs>
+          </div>
+
+          <Card>
+              <CardHeader>
+                <CardTitle>Statistics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {stats ? (
+                  <div className="space-y-2">
+                    <p>
+                      <strong>Nodes Visited:</strong> {stats.nodesVisited}
+                    </p>
+                    <p>
+                      <strong>Execution Time:</strong> {stats.executionTime.toFixed(2)} ms
+                    </p>
+                    <p>
+                      <strong>Solution Steps:</strong> {solution?.steps.length || 0}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground">Solve the puzzle to see statistics</p>
+                )}
+              </CardContent>
+            </Card>
         </TabsContent>
       </Tabs>
     </main>

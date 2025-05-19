@@ -45,7 +45,10 @@ export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: Board
   const pieceColors = useMemo(() => {
     const colors: Record<string, string> = {}
 
-    // Special colors for primary piece and exit
+    uniquePieces.forEach((piece) => {
+      colors[piece] = "bg-blue-300";
+    });
+
     colors["P"] = "bg-red-500 text-white"
     colors["K"] = "bg-green-500 text-white"
 
@@ -54,28 +57,9 @@ export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: Board
       colors[lastMovedPiece] = "bg-yellow-500 text-white"
     }
 
-    // Other pieces get random colors
-    const colorOptions = [
-    "bg-blue-300", "bg-purple-300", "bg-pink-300", "bg-indigo-300",
-    "bg-teal-300", "bg-orange-300", "bg-cyan-300", "bg-lime-300",
-    "bg-amber-300", "bg-red-300", "bg-green-300", "bg-yellow-300",
-    "bg-blue-400", "bg-purple-400", "bg-pink-400", "bg-indigo-400",
-    "bg-teal-400", "bg-orange-400", "bg-cyan-400", "bg-lime-400",
-    "bg-amber-400", "bg-red-400", "bg-green-400", "bg-yellow-400",
-  ];
-
-    uniquePieces.forEach((piece) => {
-    if (!colors[piece]) {
-      // Use char code to get a stable color index
-      const code = piece.charCodeAt(0);
-      colors[piece] = colorOptions[code % colorOptions.length];
-    }
-  });
-
     return colors
   }, [uniquePieces, lastMovedPiece])
 
-  // Determine exit position and direction
   const exitInfo = useMemo(() => {
     if (!puzzle.exit) return null
 

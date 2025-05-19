@@ -175,9 +175,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     // Check border
     if (mode === "primary") {
       const existingPrimary = boardState.pieces.find(p => p.id === "P");
-      // if (existingPrimary) {
-      //   eraseCells(existingPrimary.cells[0][0], existingPrimary.cells[0][1]);
-      // }
       placePiece(startRow, startCol, endRow, endCol, "P");
       if(!existingPrimary){
         setBoardState(prev => ({
@@ -216,7 +213,16 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       return
     }
 
-    // Prevent duplicate piece IDs
+    if (pieceId !== "K") {
+    for (let r = minRow; r <= maxRow; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
+        if (isBorderCell(r, c)) {
+          alert("Only the exit can be placed on the border")
+          return
+        }
+      }
+    }
+  }
     const existingPiece = boardState.pieces.find((p) => p.id === pieceId)
     if (existingPiece) {
       alert(`Piece "${pieceId}" already exists. Please erase it first before placing a new one.`)
@@ -264,7 +270,7 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
 
   // --- SHADOW LOGIC ---
   const getShadowCells = () => {
-    if (!hoverCell || mode !== "place") return []
+    if (!hoverCell ||( mode !== "place" && mode !== "primary" && mode !== "exit")) return []
     const [startRow, startCol] = hoverCell
     let endRow = startRow
     let endCol = startCol
@@ -275,10 +281,14 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       endRow = startRow + pieceLength - 1
       if (endRow >= fullRows - 1) return []
     }
+  
     const cells: [number, number][] = []
     for (let r = startRow; r <= endRow; r++) {
       for (let c = startCol; c <= endCol; c++) {
         cells.push([r, c])
+        if(mode === "exit"){
+          break
+        }
       }
     }
     return cells
@@ -699,6 +709,7 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
                   const isExit = isExitCell(rowIndex, colIndex)
                   const isSelected = boardState.selectedCells.some(([r, c]) => r === rowIndex && c === colIndex)
                   const isShadow = shadowCells.some(([r, c]) => r === rowIndex && c === colIndex)
+                  const isExitShadow = isShadow && isBorder && mode === "exit" && !boardState.exit
 
                   return (
                     <div
@@ -713,7 +724,9 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
                           : PIECE_COLORS[cell as keyof typeof PIECE_COLORS],
                         isSelected && "ring-2 ring-blue-500",
                         isExit && "bg-green-500 text-white relative z-10",
-                        isShadow && cell === "." && "bg-blue-200 opacity-50"
+                        isShadow && cell === "." && mode !== "primary" && mode !== "exit" && "bg-blue-200 opacity-50",
+                        isShadow && cell === "." && mode === "primary" && !boardState.primaryPiece && "bg-red-300 opacity-50",
+                        isExitShadow && cell === "." && "bg-green-300 opacity-50"
                       )}
                       onMouseDown={() => {
                         if (mode === "place" || mode === "primary") {

@@ -19,7 +19,7 @@ export function AlgorithmSelector({ value, onChange }: AlgorithmSelectorProps) {
         </div>
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="bfs" id="bfs" />
-          <Label htmlFor="bfs">Breadth-First Search</Label>
+          <Label htmlFor="bfs">Uniform Cost Search (UCS)</Label>
         </div>
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="greedy" id="greedy" />
