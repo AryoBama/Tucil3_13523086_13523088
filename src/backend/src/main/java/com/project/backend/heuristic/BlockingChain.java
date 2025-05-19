@@ -78,7 +78,7 @@ public class BlockingChain implements CountHeuristic{
 
         Character carId = car.getId();
 
-        if(visited.contains(carId)){
+        if(visited.contains(carId) || carId == 'P'){
             return 0;
         }
         

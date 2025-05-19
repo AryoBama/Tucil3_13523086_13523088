@@ -13,6 +13,6 @@ public class BlockingCar implements CountHeuristic {
     @Override
     public int getValue(Board b){
         this.b = b;
-        return b.getBlockingCar().size();
+        return b.getBlockingCar().size() + 1;
     }
 }
