@@ -3,14 +3,14 @@ package com.project.backend.algorithms.UCS;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.project.backend.heuristic.BlockingCar;
+import com.project.backend.heuristic.BlockingChain;
 import com.project.backend.heuristic.CountHeuristic;
 import com.project.backend.models.Board;
-import com.project.backend.models.BoardNode;
+import com.project.backend.models.BoardState;
 import com.project.backend.models.Car;
 
 public class Test {
-    public static void main(String[] args){
+    public static void run(){
         Board board = new Board(6,6,2,-1);
 
         Car car1 = new Car('A', 0, 0, 2,"vertical");
@@ -54,7 +54,9 @@ public class Test {
         board.addCar(main, 2, 3);
         board.displayBoard();
 
-        CountHeuristic heuristic = new BlockingCar();
+        CountHeuristic heuristic = new BlockingChain(board);
+        System.out.println("WOIII");
+        board.displayBoard();
         System.out.println("Banyak mobil penghalang: " + heuristic.getValue(board));
 
         board.move('D', -1);
@@ -75,7 +77,7 @@ public class Test {
 
         long startTime = System.nanoTime();
 
-        List<BoardNode> result = new LinkedList<>();
+        List<BoardState> result = new LinkedList<>();
 
         UCS.solveUCS(board,result);
         long endTime = System.nanoTime();

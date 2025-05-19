@@ -1,8 +1,11 @@
 package com.project.backend.algorithms.AStar;
 
+import java.util.LinkedList;
+
 import com.project.backend.heuristic.BlockingCar;
 import com.project.backend.heuristic.CountHeuristic;
 import com.project.backend.models.Board;
+import com.project.backend.models.BoardState;
 import com.project.backend.models.Car;
 
 public class Test {
@@ -50,7 +53,7 @@ public class Test {
         board.addCar(main, 2, 3);
         board.displayBoard();
 
-        CountHeuristic heuristic = new BlockingCar();
+        CountHeuristic heuristic = new BlockingCar(board);
         System.out.println("Banyak mobil penghalang: " + heuristic.getValue(board));
 
         board.move('D', -1);
@@ -71,7 +74,8 @@ public class Test {
 
         long startTime = System.nanoTime();
 
-        AStar.solveAStar(board, heuristic);
+        LinkedList<BoardState> result = new LinkedList<>();
+        AStar.solveAStar(board, heuristic, result);
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
         System.out.println("Waktu eksekusi: " + duration + " nanodetik");

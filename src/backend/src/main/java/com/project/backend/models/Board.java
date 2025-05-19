@@ -3,6 +3,7 @@ package com.project.backend.models;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class Board{
 
     private int width;
@@ -141,7 +142,6 @@ public class Board{
             int newRow = car.getStartRow() + steps;
 
             if (newRow < 0 || newRow + car.getLength() > this.height) {
-                System.out.println(car.getStartRow());
                 return false;
             }
 
@@ -302,5 +302,57 @@ public class Board{
             }        
         }
         return true;
+    }
+
+    public HashMap<Character, Pair<Integer,Integer>> getBlockingCar(){
+
+        HashMap<Character, Pair<Integer,Integer>> result = new HashMap<>();
+
+        Car mainCar = getCarById('P');
+
+        int mainRow = mainCar.getStartRow();
+        int mainCol = mainCar.getStartCol();
+        int mainLength = mainCar.getLength();
+
+
+        if (mainCar.getOrientation().equals("horizontal")){
+
+            if (mainCol < getExitCol()){
+                for (int i = mainLength + mainCol; i < getWidth(); i++){
+                    if (!isSpaceEmpty(mainRow, i)){
+                        if (!result.containsKey(grid[mainRow][i])){
+                            result.put(grid[mainRow][i],new Pair<>(mainRow, i));
+                        } 
+                    }
+                }
+            }else{
+                for (int i = mainCol - 1; i >= 0; i--){
+                    if (!isSpaceEmpty(mainRow, i)){
+                        if (!result.containsKey(grid[mainRow][i])){
+                            result.put(grid[mainRow][i],new Pair<>(mainRow, i));
+                        } 
+                    }
+                }             
+            }
+        }else{
+            if (mainRow < getExitRow()){
+                for (int i = mainLength + mainRow; i < getHeight(); i++){
+                    if (!isSpaceEmpty(i, mainCol)){
+                        if (!result.containsKey(grid[i][mainCol])){
+                            result.put(grid[i][mainCol],new Pair<>(i, mainCol));
+                        } 
+                    }
+                }
+            }else{
+                for (int i = mainRow - 1; i >= 0; i--){
+                    if (!isSpaceEmpty(i, mainCol)){
+                        if (!result.containsKey(grid[i][mainCol])){
+                            result.put(grid[i][mainCol],new Pair<>(i, mainCol));
+                        } 
+                    }
+                }             
+            }        
+        }
+        return result;
     }
 }

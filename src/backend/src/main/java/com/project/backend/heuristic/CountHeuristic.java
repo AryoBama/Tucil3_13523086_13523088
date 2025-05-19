@@ -1,6 +1,6 @@
 package com.project.backend.heuristic;
 
-import com.project.backend.models.*;
+import com.project.backend.models.Board;
 
 public interface CountHeuristic {
     

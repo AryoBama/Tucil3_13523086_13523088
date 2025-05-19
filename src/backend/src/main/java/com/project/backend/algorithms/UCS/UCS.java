@@ -13,7 +13,7 @@ import com.project.backend.models.Car;
 
 public class UCS {
     
-    public static int solveUCS(Board board, List<BoardNode> result){
+    public static int solveUCS(Board board, List<BoardState> result){
 
         boolean found = false;
 
@@ -136,7 +136,7 @@ public class UCS {
         }
 
         while(currentNode.getParent() != null){
-            result.addFirst(currentNode);
+            result.addFirst(currentNode.getState());
             currentNode =  currentNode.getParent();
         }
         // int cnt = 1;
