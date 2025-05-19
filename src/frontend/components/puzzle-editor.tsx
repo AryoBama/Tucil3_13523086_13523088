@@ -250,7 +250,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       }
     }
 
-    // Add the new piece
     const newPieces = [
       ...boardState.pieces,
       { id: pieceId, cells, isHorizontal }
@@ -268,7 +267,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     setValidationSuccess(false)
   }
 
-  // --- SHADOW LOGIC ---
   const getShadowCells = () => {
     if (!hoverCell ||( mode !== "place" && mode !== "primary" && mode !== "exit")) return []
     const [startRow, startCol] = hoverCell
@@ -300,7 +298,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     const cell = boardState.board[row][col]
     if (cell === ".") return
 
-    // If it's the exit, remove it
     if (cell === "K") {
       const newBoard = [...boardState.board.map((row) => [...row])]
       newBoard[row][col] = "."
@@ -314,27 +311,21 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       return
     }
 
-    // Don't allow erasing border cells that aren't exits
     if (isBorderCell(row, col) && cell !== "K") {
       return
     }
 
-    // Find the piece
     const pieceToRemove = boardState.pieces.find((p) => p.id === cell)
     if (!pieceToRemove) return
 
-    // Create new board state
     const newBoard = [...boardState.board.map((row) => [...row])]
 
-    // Clear all cells of this piece
     for (const [r, c] of pieceToRemove.cells) {
       newBoard[r][c] = "."
     }
 
-    // Remove the piece from the pieces list
     const newPieces = boardState.pieces.filter((p) => p.id !== cell)
 
-    // Update primary piece if needed
     let newPrimaryPiece = boardState.primaryPiece
     if (boardState.primaryPiece?.id === cell) {
       newPrimaryPiece = null
@@ -352,15 +343,12 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     setValidationSuccess(false)
   }
 
-  // Place exit
   const placeExit = (row: number, col: number) => {
-    // Exit must be in the border
     if (!isBorderCell(row, col)) {
       alert("Exit must be placed in the border area")
       return
     }
 
-    // Check if there's a primary piece and if the exit aligns with it
     if (boardState.primaryPiece) {
       const { isHorizontal } = boardState.primaryPiece
       const primaryRow = boardState.primaryPiece.cells[0][0]
@@ -379,15 +367,12 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       }
     }
 
-    // Create new board state
     const newBoard = [...boardState.board.map((row) => [...row])]
 
-    // Clear old exit if exists
     if (boardState.exit) {
       newBoard[boardState.exit[0]][boardState.exit[1]] = "."
     }
 
-    // Set new exit
     newBoard[row][col] = "K"
 
     setBoardState((prevState) => ({
@@ -401,21 +386,17 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     setValidationSuccess(false)
   }
 
-  // Validate the puzzle
   const validatePuzzle = () => {
     const errors = []
 
-    // Check if primary piece exists
     if (!boardState.primaryPiece) {
       errors.push("Primary piece (P) is required")
     }
 
-    // Check if exit exists
     if (!boardState.exit) {
       errors.push("Exit (K) is required")
     }
 
-    // Check if exit is in the border
     if (boardState.exit) {
       const [exitRow, exitCol] = boardState.exit
       const isInBorder = isBorderCell(exitRow, exitCol)
@@ -425,7 +406,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       }
     }
 
-    // Check if primary piece and exit are aligned
     if (boardState.primaryPiece && boardState.exit) {
       const { isHorizontal } = boardState.primaryPiece
       const primaryRow = boardState.primaryPiece.cells[0][0]
@@ -441,7 +421,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       }
     }
 
-    // Check if there are any pieces
     if (boardState.pieces.length === 0) {
       errors.push("At least one piece is required")
     }
@@ -514,14 +493,13 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       if (exitCol === 0) innerExitCol = 0
       else if (exitCol === fullCols - 1) innerExitCol = innerCols
 
-      // Replace the character at the exit position with 'K'
       const rowChars = innerBoard[innerExitRow].split("")
       rowChars[innerExitCol] = "K"
       innerBoard[innerExitRow] = rowChars.join("")
     }
 
     const pieceCount = boardState.pieces.length
-    return `${innerRows} ${innerCols}\n${pieceCount}\n${innerBoard.join("\n")}`
+    return `${innerRows} ${innerCols}\n${pieceCount - 1}\n${innerBoard.join("\n")}`
   }
 
   // Handle create puzzle button

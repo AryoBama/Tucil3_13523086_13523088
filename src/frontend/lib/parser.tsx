@@ -145,7 +145,7 @@ export function parseInputFile(input: string): any {
   console.log(pieces)
  
   if (pieces.size - 1 !== N) {
-    console.warn(`Warning: Expected ${N} pieces (excluding primary piece), found ${pieces.size - 1}`)
+    throw new Error(`Warning: Expected ${N} pieces (excluding primary piece), found ${pieces.size - 1}`)
   }
 
   

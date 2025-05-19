@@ -17,7 +17,7 @@ export default function Home() {
   const [exitCol, setExitCol] = useState<number | null>(null);    
   const [inputText, setInputText] = useState<string>("")
   const [algorithm, setAlgorithm] = useState<string>("AStar")
-  const [heuristic, setHeuristic] = useState<string>("BlockingChain")
+  const [heuristic, setHeuristic] = useState<string>("BlockingCar")
   const [puzzle, setPuzzle] = useState<any>(null)
   const [solution, setSolution] = useState<any>(null)
   const [currentStep, setCurrentStep] = useState<number>(0)
@@ -157,7 +157,7 @@ export default function Home() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <AlgorithmSelector value={algorithm} onChange={setAlgorithm} />
 
-                    <HeuristicSelector value={heuristic} onChange={setHeuristic} disabled={algorithm !== "AStar"} />
+                    <HeuristicSelector value={heuristic} onChange={setHeuristic} disabled={algorithm === "UCS"} />
                   </div>
 
                   <Button onClick={() => solvePuzzle(inputText, algorithm, heuristic)} disabled={!puzzle || isLoading} className="w-full">

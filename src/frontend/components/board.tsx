@@ -13,16 +13,15 @@ interface BoardProps {
 
 export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: BoardProps) {
   const currentBoard = useMemo(() => {
-    if (!solution || currentStep === 0) {
+    if (!solution || currentStep === 0 || currentStep > solution.steps.length) {
       return puzzle.initialBoard
     }
-
-    // Apply moves up to the current step
+    
     return solution.steps[currentStep - 1].board
   }, [puzzle, solution, currentStep, exitRow, exitCol])
 
   const lastMovedPiece = useMemo(() => {
-    if (!solution || currentStep === 0) {
+    if (!solution || currentStep === 0 || currentStep > solution.steps.length) {
       return null
     }
     return solution.steps[currentStep - 1].piece
