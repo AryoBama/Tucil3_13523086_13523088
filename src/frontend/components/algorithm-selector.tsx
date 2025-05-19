@@ -14,16 +14,20 @@ export function AlgorithmSelector({ value, onChange }: AlgorithmSelectorProps) {
       <Label>Pathfinding Algorithm</Label>
       <RadioGroup value={value} onValueChange={onChange} className="flex flex-col space-y-1">
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="astar" id="astar" />
-          <Label htmlFor="astar">A* Search</Label>
+          <RadioGroupItem value="AStar" id="AStar" />
+          <Label htmlFor="AStar">A* Search</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="bfs" id="bfs" />
-          <Label htmlFor="bfs">Uniform Cost Search (UCS)</Label>
+          <RadioGroupItem value="UCS" id="UCS" />
+          <Label htmlFor="UCS">Uniform Cost Search (UCS)</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="greedy" id="greedy" />
-          <Label htmlFor="greedy">Greedy Best-First Search</Label>
+          <RadioGroupItem value="GBFS" id="GBFS" />
+          <Label htmlFor="GBFS">Greedy Best-First Search</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="IDA" id="IDA" />
+          <Label htmlFor="IDA">Iterative deepening A* Search</Label>
         </div>
       </RadioGroup>
     </div>

@@ -15,21 +15,15 @@ export function HeuristicSelector({ value, onChange, disabled = false }: Heurist
       <Label className={disabled ? "text-muted-foreground" : ""}>Heuristic Function</Label>
       <RadioGroup value={value} onValueChange={onChange} className="flex flex-col space-y-1" disabled={disabled}>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="manhattan" id="manhattan" disabled={disabled} />
-          <Label htmlFor="manhattan" className={disabled ? "text-muted-foreground" : ""}>
-            Manhattan Distance
+          <RadioGroupItem value="BlockingCar" id="BlockingCar" disabled={disabled} />
+          <Label htmlFor="BlockingCar" className={disabled ? "text-muted-foreground" : ""}>
+            Blocking Car
           </Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="euclidean" id="euclidean" disabled={disabled} />
-          <Label htmlFor="euclidean" className={disabled ? "text-muted-foreground" : ""}>
-            Euclidean Distance
-          </Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="custom" id="custom" disabled={disabled} />
-          <Label htmlFor="custom" className={disabled ? "text-muted-foreground" : ""}>
-            Custom Heuristic
+          <RadioGroupItem value="BlockingChain" id="BlockingChain" disabled={disabled} />
+          <Label htmlFor="BlockingChain" className={disabled ? "text-muted-foreground" : ""}>
+            Blocking Chain
           </Label>
         </div>
       </RadioGroup>
