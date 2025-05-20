@@ -1,6 +1,6 @@
 # Tucil3_13523086_13523088
 
-<img src="https://ravensburger.cloud/images/product-cover/650x445/Educational-Game-Rush-Hour-76582.webp" alt="Rush Hour Game" width="400"/>
+![Rush Hour Game](src/frontend/public/Rush_Hour_Game.webp)
 
 ## Brief Description
 This project is a **Rush Hour Solver** application that solves Rush Hour puzzles using various search algorithms such as UCS, GBFS, A* and IDA while also providing 2 usable different heuristics to use. It provides a web interface for editing puzzles, uploading files, selecting algorithms, and visualizing the solution step by step.
