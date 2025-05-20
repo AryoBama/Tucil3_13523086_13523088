@@ -39,7 +39,7 @@ npm run dev
 4. Open your browser at [http://localhost:3000](http://localhost:3000)
 
 ## How to Use
-![Rush Hour Game](src\frontend\public\SolutionPage.png)
+![Rush Hour Game](src/frontend/public/SolutionPage.png)
 - **Puzzle Editor:** Create or edit Rush Hour puzzles via the "Puzzle Editor" tab.
 - **Solver:** Upload a puzzle configuration file or paste it manually, select the algorithm, then click "Solve Puzzle".
 - **Visualization:** View the solution steps visually and see search statistics.
