@@ -26,8 +26,8 @@ export function AlgorithmSelector({ value, onChange }: AlgorithmSelectorProps) {
           <Label htmlFor="GBFS">Greedy Best-First Search</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="IDA" id="IDA" />
-          <Label htmlFor="IDA">Iterative deepening A* Search</Label>
+          <RadioGroupItem value="Beam" id="Beam" />
+          <Label htmlFor="Beam">Beam Search</Label>
         </div>
       </RadioGroup>
     </div>
