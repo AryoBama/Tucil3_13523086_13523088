@@ -22,7 +22,7 @@ cd src/backend
 ```bash
 .\mvnw.cmd spring-boot:run
 ```
-### Frontend (Next.js/React)
+### Frontend (Next.js/React + TypeScript)
 1. Go to the frontend folder:
 ```bash
 cd src/frontend
