@@ -3,7 +3,7 @@
 ![Rush Hour Game](src/frontend/public/Rush_Hour_Game.webp)
 
 ## Brief Description
-This project is a **Rush Hour Solver** application that solves Rush Hour puzzles using various search algorithms such as UCS, GBFS, A* and IDA while also providing 2 usable different heuristics to use. It provides a web interface for editing puzzles, uploading files, selecting algorithms, and visualizing the solution step by step.
+This project is a **Rush Hour Solver** application that solves Rush Hour puzzles using various search algorithms such as UCS, GBFS, A* and Beam search while also providing 2 usable different heuristics to use. It provides a web interface for editing puzzles, uploading files, selecting algorithms, and visualizing the solution step by step.
 
 ## Requirements & Installation
 - **Java JDK 17+** (for backend)
@@ -22,7 +22,7 @@ cd src/backend
 ```bash
 .\mvnw.cmd spring-boot:run
 ```
-### Frontend (Next.js/React)
+### Frontend (Next.js/React + TypeScript)
 1. Go to the frontend folder:
 ```bash
 cd src/frontend
