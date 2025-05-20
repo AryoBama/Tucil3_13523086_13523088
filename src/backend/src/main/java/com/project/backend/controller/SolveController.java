@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.backend.algorithms.AStar.AStar;
+import com.project.backend.algorithms.Beam.Beam;
 import com.project.backend.algorithms.GBFS.GBFS;
 import com.project.backend.algorithms.IDA.IDA;
 import com.project.backend.algorithms.UCS.UCS;
@@ -159,6 +160,46 @@ public class SolveController {
         List<BoardState> result = new LinkedList<>();
         long startTime = System.nanoTime();
         Integer cntNode = GBFS.solveGBFS(board, method,result);
+        long endTime = System.nanoTime();
+        long duration = endTime - startTime;
+        duration /= 1_000_000.0;
+        System.out.println("Durasinya: " + duration);
+
+        for(BoardState node : result){
+            Map<String, Object> step = new HashMap<>();
+            step.put("board", node.getGrid());
+            step.put("piece", node.getCar().getId());
+            step.put("direction", node.getDirections());
+            steps.add(step);
+        }
+        board.displayBoard();
+
+        response.put("steps", steps);
+        response.put("time", duration);
+        response.put("cntNode", cntNode);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/Beam")
+    public ResponseEntity<Map<String, Object>>SolveWithBeam(@RequestBody BoardRequest request, @RequestParam String heuristic) {
+        Map<String, Object> response = new HashMap<>();
+        List<Map<String, Object>> steps = new ArrayList<>();
+
+        
+        Board board = request.convertToBoard();
+
+        CountHeuristic method;
+
+        if (heuristic.equals("BlockingChain")){
+            method = new BlockingChain(board);
+        }else{
+            method = new BlockingCar(board);
+        }
+        
+        List<BoardState> result = new LinkedList<>();
+        long startTime = System.nanoTime();
+        int beamWidth = 20;
+        Integer cntNode = Beam.solveBeamSearch(board, method,result,beamWidth);
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
         duration /= 1_000_000.0;
