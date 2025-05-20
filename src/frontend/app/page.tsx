@@ -125,7 +125,11 @@ export default function Home() {
 
   return (
     <main className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center my-6">Rush Hour Solver</h1>
+      <img
+        src="/title.png"
+        alt="Rush Hour Solver"
+        className="mx-auto my-6 h-32"
+      />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">

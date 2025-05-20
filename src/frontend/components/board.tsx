@@ -43,7 +43,7 @@ export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: Board
     const colors: Record<string, string> = {}
 
     uniquePieces.forEach((piece) => {
-      colors[piece] = "bg-blue-300";
+      colors[piece] = "bg-primary";
     });
 
     colors["P"] = "bg-red-500 text-white"
