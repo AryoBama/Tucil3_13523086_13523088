@@ -1,7 +1,5 @@
 export function parseInputFile(input: string): any {
   const lines = input.trim().split("\n")
-
-  // Parse first line for dimensions and number of pieces
   let [row, col] = lines[0].split(" ").map(Number)
   let N = Number(lines[1])
     
@@ -44,7 +42,6 @@ export function parseInputFile(input: string): any {
         }
         let top = 0;
         let bot = 0;
-        // Validate all rows except the extra one have length col
         for(let i = 0; i < boardLines[0].length; i++){
             if(boardLines[0][i] === 'K'){
                 top = 1;
@@ -63,15 +60,10 @@ export function parseInputFile(input: string): any {
                 throw new Error(`Expected last row length ${col - 1} for exit row, got ${line.length}`);
             }
         }
-        // Optionally, count or validate exit position in last row
     }
 
-
-  // Convert board to 2D array
   const initialBoard = boardLines.map((line) => line.split(""))
 
-
-  // Find primary piece and exit
   let primaryPieceFound = false
   let exitFound = false
   const primaryPiecePositions: [number, number][] = []

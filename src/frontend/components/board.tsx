@@ -27,7 +27,6 @@ export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: Board
     return solution.steps[currentStep - 1].piece
   }, [solution, currentStep])
 
-  // Get unique pieces for color assignment
   const uniquePieces = useMemo(() => {
     const pieces = new Set<string>()
     for (const row of currentBoard) {
@@ -40,7 +39,6 @@ export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: Board
     return Array.from(pieces)
   }, [currentBoard])
 
-  // Generate colors for pieces
   const pieceColors = useMemo(() => {
     const colors: Record<string, string> = {}
 
@@ -51,7 +49,6 @@ export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: Board
     colors["P"] = "bg-red-500 text-white"
     colors["K"] = "bg-green-500 text-white"
 
-    // Last moved piece
     if (lastMovedPiece && lastMovedPiece !== "P") {
       colors[lastMovedPiece] = "bg-yellow-500 text-white"
     }
@@ -75,14 +72,12 @@ export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: Board
     return { row: exitRow, col: exitCol, direction }
   }, [puzzle.exit, currentBoard])
 
-  // Check if a cell is in the border
   const isBorderCell = (row: number, col: number) => {
     const rows = currentBoard.length
     const cols = currentBoard[0].length
     return row === 0 || row === rows - 1 || col === 0 || col === cols - 1
   }
 
-  // Check if a cell is the exit
   const isExitCell = (row: number, col: number) => {
     return exitInfo && exitInfo.row === row && exitInfo.col === col
   }
@@ -107,7 +102,6 @@ export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: Board
               >
                 {isExit ? "K" : cell !== "." ? cell : ""}
 
-                {/* Add exit indicator */}
                 {isExit && (
                   <div
                     className={cn(
@@ -124,8 +118,6 @@ export function Board({ puzzle, solution, currentStep, exitRow, exitCol }: Board
           })}
         </div>
       ))}
-
-      {/* Add exit path outside the board */}
       {exitInfo && (
         <div
           className={cn(

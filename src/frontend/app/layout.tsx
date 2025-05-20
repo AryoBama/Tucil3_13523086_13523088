@@ -5,8 +5,8 @@ import { Inter } from "next/font/google"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Sliding Block Puzzle Solver",
-  description: "A tool to solve sliding block puzzles using various pathfinding algorithms",
+  title: "Rush Hour Solver",
+  description: "A tool to solve Rush Hour puzzles using various pathfinding algorithms",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

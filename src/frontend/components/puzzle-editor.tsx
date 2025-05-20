@@ -104,17 +104,14 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     return { row: exitRow, col: exitCol, direction }
   }, [boardState.exit, fullRows, fullCols])
 
-  // Check if a cell is in the border
   const isBorderCell = (row: number, col: number) => {
     return row === 0 || row === fullRows - 1 || col === 0 || col === fullCols - 1
   }
 
-  // Check if a cell is the exit
   const isExitCell = (row: number, col: number) => {
     return boardState.exit && boardState.exit[0] === row && boardState.exit[1] === col
   }
 
-  // Reset board when dimensions change
   useEffect(() => {
     const newFullRows = innerRows + 2
     const newFullCols = innerCols + 2
@@ -137,12 +134,10 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     setIsClient(true)
   }, [])
 
-  // --- Replace handleCellClick to only allow erase/primary/exit ---
   const handleCellClick = (row: number, col: number) => {
     if (mode === "erase") {
       eraseCells(row, col)
     } else if (mode === "exit") {
-      // Only allow placing exits in the border
       if (!isBorderCell(row, col)) {
         alert("Exits can only be placed in the border area")
         return
@@ -196,15 +191,12 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     }
   }
 
-  // Place a piece on the board
   const placePiece = (startRow: number, startCol: number, endRow: number, endCol: number, pieceId: string) => {
-    // Ensure start is top-left and end is bottom-right
     const minRow = Math.min(startRow, endRow)
     const maxRow = Math.max(startRow, endRow)
     const minCol = Math.min(startCol, endCol)
     const maxCol = Math.max(startCol, endCol)
 
-    // Check if this is a valid piece (horizontal or vertical)
     const isHorizontal = minRow === maxRow
     const isVertical = minCol === maxCol
 
@@ -229,7 +221,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       return
     }
 
-    // Check if cells are available
     for (let r = minRow; r <= maxRow; r++) {
       for (let c = minCol; c <= maxCol; c++) {
         if (boardState.board[r][c] !== "." && boardState.board[r][c] !== pieceId) {
@@ -239,7 +230,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
       }
     }
 
-    // Create new board state
     const newBoard = [...boardState.board.map((row) => [...row])]
     const cells: [number, number][] = []
 
@@ -272,12 +262,18 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     const [startRow, startCol] = hoverCell
     let endRow = startRow
     let endCol = startCol
-    if (orientation === "horizontal") {
-      endCol = startCol + pieceLength - 1
-      if (endCol >= fullCols - 1) return []
+    if(mode !== "exit"){
+      if (orientation === "horizontal") {
+        endCol = startCol + pieceLength - 1
+        if (endRow >= fullRows - 1 || startRow === 0 || endCol >= fullCols - 1 || startCol === 0) return []
+      } else {
+        endRow = startRow + pieceLength - 1
+        if (endRow >= fullRows - 1 || startRow === 0 || endCol >= fullCols - 1 || startCol === 0) return []
+      }
     } else {
-      endRow = startRow + pieceLength - 1
-      if (endRow >= fullRows - 1) return []
+      if (!isBorderCell(startRow, startCol)){
+        return []
+      }
     }
   
     const cells: [number, number][] = []
@@ -293,7 +289,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
   }
   const shadowCells = getShadowCells()
 
-  // Erase cells
   const eraseCells = (row: number, col: number) => {
     const cell = boardState.board[row][col]
     if (cell === ".") return
@@ -511,7 +506,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     }
   }
 
-  // Reset the board
   const resetBoard = () => {
     setBoardState({
       dimensions: [innerRows, innerCols],
@@ -527,7 +521,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
     setValidationSuccess(false)
   }
 
-  // Get next available piece ID
   const getNextAvailablePiece = () => {
     const usedPieces = new Set(boardState.pieces.map((p) => p.id))
     const allPieces = Object.keys(PIECE_COLORS).filter((p) => p !== "P" && p !== "K")
@@ -561,7 +554,7 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
 
           <div className="p-2 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-sm text-blue-700">
-              Total board size: {fullRows}×{fullCols} (including border for exits)
+              Total board size: {fullRows} x {fullCols} (including border for exits)
             </p>
           </div>
 
@@ -687,7 +680,7 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
                   const isExit = isExitCell(rowIndex, colIndex)
                   const isSelected = boardState.selectedCells.some(([r, c]) => r === rowIndex && c === colIndex)
                   const isShadow = shadowCells.some(([r, c]) => r === rowIndex && c === colIndex)
-                  const isExitShadow = isShadow && isBorder && mode === "exit" && !boardState.exit
+                  const isExitShadow = isShadow  && mode === "exit" && !boardState.exit
 
                   return (
                     <div
@@ -742,7 +735,6 @@ export function PuzzleEditor({ onPuzzleCreated }: { onPuzzleCreated: (puzzleText
               </div>
             ))}
 
-            {/* Add exit path outside the board */}
             {exitInfo && (
               <div
                 className={cn(
